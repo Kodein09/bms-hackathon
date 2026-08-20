@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BMS IAM</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { 
+      darkMode: ['selector', '[data-theme="dark"]'],
+      theme: { extend: { fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] } } }
+    }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root, [data-theme="dark"] {
+      --bms-bg: #0c0c0e; --bms-card: #16161a; --bms-border: #2a2a32;
+      --bms-text: #e4e4e7; --bms-muted: #a1a1aa; --bms-header: rgba(12,12,14,0.9);
+      --bms-sidebar: #111114;
+    }
+    [data-theme="light"] {
+      --bms-bg: #f4f4f5; --bms-card: #ffffff; --bms-border: #e4e4e7;
+      --bms-text: #18181b; --bms-muted: #71717a; --bms-header: rgba(244,244,245,0.95);
+      --bms-sidebar: #fafafa;
+    }
+    body { background: var(--bms-bg); color: var(--bms-text); transition: background 0.35s, color 0.35s; }
+    .nav-item { transition: background 0.2s, border-color 0.2s; border: 1px solid transparent; }
+    .nav-item:hover, .nav-item.active { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.2); }
+    [data-theme="light"] .nav-item:hover, [data-theme="light"] .nav-item.active { background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.15); }
+    .table-row { transition: background 0.15s; }
+    .table-row:hover { background: rgba(255,255,255,0.03); }
+    .badge { @apply px-2.5 py-0.5 rounded-full text-xs font-medium; }
+  </style>
+</head>
+<body class="font-sans min-h-screen flex flex-col">
+  <header class="sticky top-0 z-50 border-b border-[var(--bms-border)] bg-[var(--bms-header)] backdrop-blur-md h-14 flex items-center px-4">
+    <div class="flex items-center gap-3">
+      <a href="index.html" class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center">
+          <span class="text-white font-bold text-sm">B</span>
+        </div>
+        <span class="font-semibold">BMS <span class="text-[var(--bms-muted)] font-normal">IAM</span></span>
+      </a>
+      <nav class="hidden md:flex items-center gap-1 ml-6 text-sm">
+        <a href="index.html" class="px-3 py-1.5 rounded-lg text-[var(--bms-muted)] hover:bg-white/5">Главная</a>
+        <a href="exchange.html" class="px-3 py-1.5 rounded-lg text-[var(--bms-muted)] hover:bg-white/5">Exchange</a>
+        <a href="my.html" class="px-3 py-1.5 rounded-lg text-[var(--bms-muted)] hover:bg-white/5">My</a>
+        <a href="messenger.html" class="px-3 py-1.5 rounded-lg text-[var(--bms-muted)] hover:bg-white/5">Messenger</a>
+        <a href="iam.html" class="px-3 py-1.5 rounded-lg bg-white/10 font-medium">IAM</a>
+      </nav>
+    </div>
+    <div class="ml-auto">
+      <button data-theme-toggle class="p-2 rounded-full hover:bg-white/10">
+        <svg data-icon="dark" class="w-5 h-5 text-[var(--bms-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+        <svg data-icon="light" class="w-5 h-5 text-[var(--bms-muted)] hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="flex-1 flex">
+    <!-- Sidebar -->
+    <aside class="w-56 border-r border-[var(--bms-border)] bg-[var(--bms-sidebar)] p-4">
+      <nav class="space-y-1">
+        <button data-tab="users" class="nav-item active w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left text-sm font-medium">
+          <svg class="w-5 h-5 text-[var(--bms-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+          Пользователи
+        </button>
+        <button data-tab="roles" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left text-sm font-medium">
+          <svg class="w-5 h-5 text-[var(--bms-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+          Роли
+        </button>
+        <button data-tab="permissions" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left text-sm font-medium">
+          <svg class="w-5 h-5 text-[var(--bms-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+          Разрешения
+        </button>
+        <button data-tab="invitations" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left text-sm font-medium">
+          <svg class="w-5 h-5 text-[var(--bms-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/></svg>
+          Приглашения
+        </button>
+      </nav>
+    </aside>
+
+    <!-- Content -->
+    <main class="flex-1 p-6 overflow-auto">
+      <!-- Users -->
+      <div id="tab-users" class="tab-content">
+        <div class="flex items-center justify-between mb-6">
+          <h1 class="text-xl font-semibold">Пользователи</h1>
+          <button class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium">+ Пригласить</button>
+        </div>
+        <div class="bg-[var(--bms-card)] rounded-2xl border border-[var(--bms-border)] overflow-hidden">
+          <table class="w-full text-sm">
+            <thead class="text-[var(--bms-muted)] border-b border-[var(--bms-border)]">
+              <tr>
+                <th class="text-left px-5 py-3 font-medium">#</th>
+                <th class="text-left px-5 py-3 font-medium">Имя</th>
+                <th class="text-left px-5 py-3 font-medium">Email</th>
+                <th class="text-left px-5 py-3 font-medium">Роли</th>
+                <th class="text-left px-5 py-3 font-medium"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="table-row border-b border-[var(--bms-border)]">
+                <td class="px-5 py-4 text-[var(--bms-muted)]">647</td>
+                <td class="px-5 py-4 font-medium">Вильям Тохтахунов</td>
+                <td class="px-5 py-4 text-[var(--bms-muted)]">wtokhtakhunov@p.systems</td>
+                <td class="px-5 py-4">
+                  <span class="badge bg-indigo-500/20 text-indigo-400">admin</span>
+                  <span class="badge bg-zinc-500/20 text-zinc-400 ml-1">customer</span>
+                </td>
+                <td class="px-5 py-4 text-right"><button class="text-[var(--bms-muted)] hover:text-white">⋯</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Roles -->
+      <div id="tab-roles" class="tab-content hidden">
+        <h1 class="text-xl font-semibold mb-6">Роли</h1>
+        <div class="bg-[var(--bms-card)] rounded-2xl border border-[var(--bms-border)] overflow-hidden">
+          <table class="w-full text-sm">
+            <thead class="text-[var(--bms-muted)] border-b border-[var(--bms-border)]">
+              <tr>
+                <th class="text-left px-5 py-3 font-medium">#</th>
+                <th class="text-left px-5 py-3 font-medium">Название</th>
+                <th class="text-left px-5 py-3 font-medium"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="table-row border-b border-[var(--bms-border)]"><td class="px-5 py-3.5 text-[var(--bms-muted)]">10127</td><td class="px-5 py-3.5">admin</td><td class="px-5 py-3.5 text-right">⋯</td></tr>
+              <tr class="table-row border-b border-[var(--bms-border)]"><td class="px-5 py-3.5 text-[var(--bms-muted)]">10128</td><td class="px-5 py-3.5">customer</td><td class="px-5 py-3.5 text-right">⋯</td></tr>
+              <tr class="table-row border-b border-[var(--bms-border)]"><td class="px-5 py-3.5 text-[var(--bms-muted)]">10129</td><td class="px-5 py-3.5">producer</td><td class="px-5 py-3.5 text-right">⋯</td></tr>
+              <tr class="table-row border-b border-[var(--bms-border)]"><td class="px-5 py-3.5 text-[var(--bms-muted)]">10130</td><td class="px-5 py-3.5">my</td><td class="px-5 py-3.5 text-right">⋯</td></tr>
+              <tr class="table-row border-b border-[var(--bms-border)]"><td class="px-5 py-3.5 text-[var(--bms-muted)]">10131</td><td class="px-5 py-3.5">billing</td><td class="px-5 py-3.5 text-right">⋯</td></tr>
+              <tr class="table-row border-b border-[var(--bms-border)]"><td class="px-5 py-3.5 text-[var(--bms-muted)]">10132</td><td class="px-5 py-3.5">tracker</td><td class="px-5 py-3.5 text-right">⋯</td></tr>
+              <tr class="table-row border-b border-[var(--bms-border)]"><td class="px-5 py-3.5 text-[var(--bms-muted)]">10133</td><td class="px-5 py-3.5">archive</td><td class="px-5 py-3.5 text-right">⋯</td></tr>
+              <tr class="table-row border-b border-[var(--bms-border)]"><td class="px-5 py-3.5 text-[var(--bms-muted)]">10134</td><td class="px-5 py-3.5">messenger</td><td class="px-5 py-3.5 text-right">⋯</td></tr>
+              <tr class="table-row border-b border-[var(--bms-border)]"><td class="px-5 py-3.5 text-[var(--bms-muted)]">10135</td><td class="px-5 py-3.5">trading</td><td class="px-5 py-3.5 text-right">⋯</td></tr>
+              <tr class="table-row"><td class="px-5 py-3.5 text-[var(--bms-muted)]">10136</td><td class="px-5 py-3.5">exchange</td><td class="px-5 py-3.5 text-right">⋯</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Permissions -->
+      <div id="tab-permissions" class="tab-content hidden">
+        <h1 class="text-xl font-semibold mb-6">Разрешения</h1>
+        <div class="bg-[var(--bms-card)] rounded-2xl border border-[var(--bms-border)] overflow-hidden">
+          <table class="w-full text-sm">
+            <thead class="text-[var(--bms-muted)] border-b border-[var(--bms-border)]">
+              <tr>
+                <th class="text-left px-5 py-3 font-medium">#</th>
+                <th class="text-left px-5 py-3 font-medium">Название</th>
+                <th class="text-left px-5 py-3 font-medium"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="table-row border-b border-[var(--bms-border)]"><td class="px-5 py-3.5 text-[var(--bms-muted)]">4819</td><td class="px-5 py-3.5">application.list</td><td class="px-5 py-3.5 text-right">⋯</td></tr>
+              <tr class="table-row border-b border-[var(--bms-border)]"><td class="px-5 py-3.5 text-[var(--bms-muted)]">4805</td><td class="px-5 py-3.5">permission.create</td><td class="px-5 py-3.5 text-right">⋯</td></tr>
+              <tr class="table-row border-b border-[var(--bms-border)]"><td class="px-5 py-3.5 text-[var(--bms-muted)]">4808</td><td class="px-5 py-3.5">permission.delete</td><td class="px-5 py-3.5 text-right">⋯</td></tr>
+              <tr class="table-row border-b border-[var(--bms-border)]"><td class="px-5 py-3.5 text-[var(--bms-muted)]">4809</td><td class="px-5 py-3.5">permission.list</td><td class="px-5 py-3.5 text-right">⋯</td></tr>
+              <tr class="table-row border-b border-[var(--bms-border)]"><td class="px-5 py-3.5 text-[var(--bms-muted)]">4806</td><td class="px-5 py-3.5">permission.read</td><td class="px-5 py-3.5 text-right">⋯</td></tr>
+              <tr class="table-row border-b border-[var(--bms-border)]"><td class="px-5 py-3.5 text-[var(--bms-muted)]">4807</td><td class="px-5 py-3.5">permission.update</td><td class="px-5 py-3.5 text-right">⋯</td></tr>
+              <tr class="table-row border-b border-[var(--bms-border)]"><td class="px-5 py-3.5 text-[var(--bms-muted)]">4821</td><td class="px-5 py-3.5">profile.create</td><td class="px-5 py-3.5 text-right">⋯</td></tr>
+              <tr class="table-row border-b border-[var(--bms-border)]"><td class="px-5 py-3.5 text-[var(--bms-muted)]">4820</td><td class="px-5 py-3.5">profile.list</td><td class="px-5 py-3.5 text-right">⋯</td></tr>
+              <tr class="table-row border-b border-[var(--bms-border)]"><td class="px-5 py-3.5 text-[var(--bms-muted)]">4822</td><td class="px-5 py-3.5">profile.update</td><td class="px-5 py-3.5 text-right">⋯</td></tr>
+              <tr class="table-row"><td class="px-5 py-3.5 text-[var(--bms-muted)]">4817</td><td class="px-5 py-3.5">project.create</td><td class="px-5 py-3.5 text-right">⋯</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Invitations -->
+      <div id="tab-invitations" class="tab-content hidden">
+        <div class="flex items-center justify-between mb-6">
+          <h1 class="text-xl font-semibold">Приглашения</h1>
+          <button class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium">+ Новое приглашение</button>
+        </div>
+        <div class="bg-[var(--bms-card)] rounded-2xl border border-[var(--bms-border)] p-16 text-center">
+          <div class="text-4xl mb-3 opacity-40">📭</div>
+          <p class="text-[var(--bms-muted)]">Данные не найдены</p>
+          <p class="text-sm text-[var(--bms-muted)] mt-1">Пока нет активных приглашений</p>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/theme.js"></script>
+  <script>
+    document.querySelectorAll('[data-tab]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('[data-tab]').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+        document.getElementById('tab-' + btn.dataset.tab).classList.remove('hidden');
+      });
+    });
+  </script>
+</body>
+</html>

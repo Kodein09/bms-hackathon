@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BMS Exchange — Поиск специалистов</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { 
+      darkMode: ['selector', '[data-theme="dark"]'],
+      theme: { extend: { fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] } } }
+    }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root, [data-theme="dark"] {
+      --bms-bg: #0c0c0e;
+      --bms-card: #16161a;
+      --bms-border: #2a2a32;
+      --bms-text: #e4e4e7;
+      --bms-muted: #a1a1aa;
+      --bms-header: rgba(12,12,14,0.92);
+      --bms-input: #1c1c22;
+    }
+    [data-theme="light"] {
+      --bms-bg: #f4f4f5;
+      --bms-card: #ffffff;
+      --bms-border: #e4e4e7;
+      --bms-text: #18181b;
+      --bms-muted: #71717a;
+      --bms-header: rgba(244,244,245,0.95);
+      --bms-input: #f4f4f5;
+    }
+    body { background: var(--bms-bg); color: var(--bms-text); transition: background 0.35s, color 0.35s; }
+
+    /* Карточки резюме — с hover */
+    .resume-card {
+      transition: border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+      border: 1px solid transparent;
+    }
+    .resume-card:hover {
+      border-color: rgba(255,255,255,0.7);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(0,0,0,0.3);
+    }
+    [data-theme="light"] .resume-card:hover {
+      border-color: rgba(0,0,0,0.4);
+      box-shadow: 0 12px 32px rgba(0,0,0,0.1);
+    }
+
+    /* Сайдбар фильтров — полностью статичный */
+    .sidebar-card {
+      border: 1px solid var(--bms-border);
+      background: var(--bms-card);
+    }
+
+    input[type=range] {
+      -webkit-appearance: none;
+      height: 4px;
+      border-radius: 2px;
+      background: #3f3f46;
+    }
+    [data-theme="light"] input[type=range] { background: #d4d4d8; }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #6366f1;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body class="font-sans min-h-screen antialiased">
+
+  <!-- Header -->
+  <header class="sticky top-0 z-50 border-b border-[var(--bms-border)] bg-[var(--bms-header)] backdrop-blur-md">
+    <div class="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between">
+      <div class="flex items-center gap-4">
+        <a href="index.html" class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center">
+            <span class="text-white font-bold text-sm">B</span>
+          </div>
+          <span class="font-semibold text-lg">BMS</span>
+        </a>
+
+        <!-- Верхние вкладки как в оригинале -->
+        <div class="hidden md:flex items-center gap-1 ml-4">
+          <button class="px-4 py-1.5 rounded-lg bg-indigo-600 text-white text-sm font-medium">Найти сотрудника</button>
+          <button class="px-4 py-1.5 rounded-lg text-[var(--bms-muted)] hover:text-[var(--bms-text)] hover:bg-white/5 text-sm">Мои компании</button>
+          <button class="px-4 py-1.5 rounded-lg text-[var(--bms-muted)] hover:text-[var(--bms-text)] hover:bg-white/5 text-sm">Мои вакансии</button>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button data-theme-toggle class="p-2 rounded-full hover:bg-white/10" title="Сменить тему">
+          <svg data-icon="dark" class="w-5 h-5 text-[var(--bms-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+          <svg data-icon="light" class="w-5 h-5 text-[var(--bms-muted)] hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+        </button>
+        <a href="my.html" class="w-9 h-9 rounded-full bg-[var(--bms-card)] border border-[var(--bms-border)] flex items-center justify-center">
+          <svg class="w-5 h-5 text-[var(--bms-muted)]" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 py-6">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+      <!-- Левый статичный сайдбар -->
+      <aside class="lg:col-span-3 space-y-4">
+
+        <!-- Выбор вакансии -->
+        <div class="sidebar-card rounded-xl p-4">
+          <h3 class="font-medium mb-3 text-sm">Выбрать вакансию</h3>
+          <select class="w-full px-3 py-2 rounded-lg bg-[var(--bms-input)] border border-[var(--bms-border)] text-sm">
+            <option>Все вакансии</option>
+            <option>Backend Developer</option>
+            <option>Frontend Developer</option>
+            <option>DevOps Engineer</option>
+          </select>
+        </div>
+
+        <!-- Фильтры -->
+        <div class="sidebar-card rounded-xl p-4 space-y-5">
+          <div class="flex items-center justify-between">
+            <h3 class="font-medium text-sm">Фильтр</h3>
+            <button class="text-xs text-indigo-400 hover:text-indigo-300">Очистить</button>
+          </div>
+
+          <!-- Навыки -->
+          <div>
+            <label class="text-xs text-[var(--bms-muted)] mb-1.5 block">Навыки</label>
+            <select class="w-full px-3 py-2 rounded-lg bg-[var(--bms-input)] border border-[var(--bms-border)] text-sm">
+              <option>Навык</option>
+              <option>JavaScript</option>
+              <option>Python</option>
+              <option>React</option>
+              <option>Vue.js</option>
+              <option>Docker</option>
+            </select>
+          </div>
+
+          <!-- Опыт работы -->
+          <div>
+            <label class="text-xs text-[var(--bms-muted)] mb-2 block">Опыт работы</label>
+            <div class="flex items-center gap-2 mb-2">
+              <input type="number" value="0" class="w-14 px-2 py-1 rounded-md bg-[var(--bms-input)] border border-[var(--bms-border)] text-center text-sm">
+              <span class="text-xs text-[var(--bms-muted)]">От</span>
+              <input type="range" min="0" max="30" value="15" class="flex-1">
+              <span class="text-xs text-[var(--bms-muted)]">До</span>
+              <input type="number" value="30" class="w-14 px-2 py-1 rounded-md bg-[var(--bms-input)] border border-[var(--bms-border)] text-center text-sm">
+            </div>
+          </div>
+
+          <!-- Возраст -->
+          <div>
+            <label class="text-xs text-[var(--bms-muted)] mb-2 block">Возраст</label>
+            <div class="flex items-center gap-2">
+              <input type="number" value="15" class="w-14 px-2 py-1 rounded-md bg-[var(--bms-input)] border border-[var(--bms-border)] text-center text-sm">
+              <span class="text-xs text-[var(--bms-muted)]">От</span>
+              <input type="range" min="15" max="100" value="50" class="flex-1">
+              <span class="text-xs text-[var(--bms-muted)]">До</span>
+              <input type="number" value="100" class="w-14 px-2 py-1 rounded-md bg-[var(--bms-input)] border border-[var(--bms-border)] text-center text-sm">
+            </div>
+          </div>
+
+          <!-- Формат работы -->
+          <div>
+            <label class="text-xs text-[var(--bms-muted)] mb-2 block">Формат работы</label>
+            <div class="space-y-1.5 text-sm">
+              <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" class="rounded"> Удалённый</label>
+              <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" class="rounded"> Офисный</label>
+              <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" class="rounded"> Гибридный</label>
+            </div>
+          </div>
+
+          <!-- Тип занятости -->
+          <div>
+            <label class="text-xs text-[var(--bms-muted)] mb-2 block">Тип занятости</label>
+            <div class="space-y-1.5 text-sm">
+              <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" class="rounded"> Почасовая</label>
+              <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" class="rounded"> Частичная</label>
+              <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" class="rounded"> Полная</label>
+            </div>
+          </div>
+
+          <!-- Ставка -->
+          <div>
+            <label class="text-xs text-[var(--bms-muted)] mb-2 block">Ставка</label>
+            <div class="space-y-2 text-sm">
+              <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" class="rounded"> Фиксированная</label>
+              <div class="flex gap-2 pl-6">
+                <input type="text" placeholder="Мин" class="w-full px-2 py-1 rounded-md bg-[var(--bms-input)] border border-[var(--bms-border)] text-sm">
+                <input type="text" placeholder="Макс" class="w-full px-2 py-1 rounded-md bg-[var(--bms-input)] border border-[var(--bms-border)] text-sm">
+              </div>
+              <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" class="rounded"> Почасовая</label>
+              <div class="flex gap-2 pl-6">
+                <input type="text" placeholder="Мин /ч." class="w-full px-2 py-1 rounded-md bg-[var(--bms-input)] border border-[var(--bms-border)] text-sm">
+                <input type="text" placeholder="Макс /ч." class="w-full px-2 py-1 rounded-md bg-[var(--bms-input)] border border-[var(--bms-border)] text-sm">
+              </div>
+            </div>
+          </div>
+
+          <!-- Язык -->
+          <div>
+            <label class="text-xs text-[var(--bms-muted)] mb-1.5 block">Язык</label>
+            <div class="flex gap-2">
+              <select class="flex-1 px-2 py-1.5 rounded-md bg-[var(--bms-input)] border border-[var(--bms-border)] text-sm">
+                <option>—</option>
+                <option>English</option>
+                <option>Russian</option>
+                <option>Turkish</option>
+              </select>
+              <select class="flex-1 px-2 py-1.5 rounded-md bg-[var(--bms-input)] border border-[var(--bms-border)] text-sm">
+                <option>—</option>
+                <option>A1</option>
+                <option>A2</option>
+                <option>B1</option>
+                <option>B2</option>
+                <option>C1</option>
+                <option>C2</option>
+              </select>
+            </div>
+            <button class="text-xs text-indigo-400 mt-1.5">+ Добавить</button>
+          </div>
+
+          <!-- Страна -->
+          <div>
+            <label class="text-xs text-[var(--bms-muted)] mb-1.5 block">Страна</label>
+            <select class="w-full px-3 py-2 rounded-lg bg-[var(--bms-input)] border border-[var(--bms-border)] text-sm">
+              <option>—</option>
+              <option>Turkey</option>
+              <option>India</option>
+              <option>Kazakhstan</option>
+              <option>Russia</option>
+            </select>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Основной контент -->
+      <section class="lg:col-span-9">
+        <!-- Поиск + сортировка -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+          <div class="relative flex-1 max-w-lg">
+            <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[var(--bms-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            <input type="text" placeholder="Поиск" class="w-full pl-9 pr-4 py-2 rounded-lg bg-[var(--bms-card)] border border-[var(--bms-border)] text-sm">
+          </div>
+          <div class="flex items-center gap-3 text-sm">
+            <span class="text-[var(--bms-muted)]">23 резюме найдено</span>
+            <select class="px-3 py-2 rounded-lg bg-[var(--bms-card)] border border-[var(--bms-border)]">
+              <option>Сначала новые</option>
+              <option>По зарплате ↑</option>
+              <option>По зарплате ↓</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Список резюме -->
+        <div class="space-y-3">
+          <!-- Карточка 1 -->
+          <article class="resume-card bg-[var(--bms-card)] rounded-xl p-5">
+            <div class="flex justify-between gap-4">
+              <div class="flex gap-4">
+                <div class="w-11 h-11 rounded-full bg-indigo-500/20 flex items-center justify-center text-indigo-400 font-semibold shrink-0 text-sm">MA</div>
+                <div>
+                  <h3 class="font-semibold text-indigo-400">MUKHAMMAD AZIMOV</h3>
+                  <p class="text-sm font-medium">Computer Engineer</p>
+                  <p class="text-xs text-[var(--bms-muted)] mt-1">Turkey, Izmir · Удалённый · Фиксированная</p>
+                  <p class="text-xs text-[var(--bms-muted)]">English B2 · Russian C1 · Turkish C2</p>
+                  <p class="text-sm text-[var(--bms-muted)] mt-2 leading-relaxed">I am a backend-focused software engineer with strong experience in building scalable, high-performance systems and data-driven applications.</p>
+                  <div class="flex flex-wrap gap-1.5 mt-3">
+                    <span class="px-2 py-0.5 rounded-md bg-white/5 text-xs">C#</span>
+                  </div>
+                </div>
+              </div>
+              <div class="text-right shrink-0">
+                <p class="font-semibold">1500 USD</p>
+                <p class="text-xs text-[var(--bms-muted)]">в месяц</p>
+              </div>
+            </div>
+          </article>
+
+          <!-- Карточка 2 -->
+          <article class="resume-card bg-[var(--bms-card)] rounded-xl p-5">
+            <div class="flex justify-between gap-4">
+              <div class="flex gap-4">
+                <div class="w-11 h-11 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 font-semibold shrink-0 text-sm">PA</div>
+                <div>
+                  <h3 class="font-semibold text-indigo-400">Parth Arun</h3>
+                  <p class="text-sm font-medium">Senior Analyst Java Developer</p>
+                  <p class="text-xs text-[var(--bms-muted)] mt-1">India, Mumbai · Удалённый · Фиксированная</p>
+                  <p class="text-xs text-[var(--bms-muted)]">French A0 · English C2</p>
+                  <ul class="text-sm text-[var(--bms-muted)] mt-2 space-y-0.5">
+                    <li>• Maintained and enhanced systems across multiple sectors including defence, aerospace, and automobiles.</li>
+                    <li>• Developed and maintained RESTful APIs using Java and Spring Boot in a microservices architecture...</li>
+                  </ul>
+                  <div class="flex flex-wrap gap-1.5 mt-3">
+                    <span class="px-2 py-0.5 rounded-md bg-white/5 text-xs">JavaScript</span>
+                    <span class="px-2 py-0.5 rounded-md bg-white/5 text-xs">Python</span>
+                    <span class="px-2 py-0.5 rounded-md bg-white/5 text-xs">MySQL</span>
+                    <span class="px-2 py-0.5 rounded-md bg-white/5 text-xs">Terraform</span>
+                  </div>
+                </div>
+              </div>
+              <div class="text-right shrink-0">
+                <p class="font-semibold">600000 INR</p>
+                <p class="text-xs text-[var(--bms-muted)]">в месяц</p>
+              </div>
+            </div>
+          </article>
+
+          <!-- Карточка 3 -->
+          <article class="resume-card bg-[var(--bms-card)] rounded-xl p-5">
+            <div class="flex justify-between gap-4">
+              <div class="flex gap-4">
+                <div class="w-11 h-11 rounded-full bg-violet-500/20 flex items-center justify-center text-violet-400 font-semibold shrink-0 text-sm">JG</div>
+                <div>
+                  <h3 class="font-semibold text-indigo-400">Jorge Gerd</h3>
+                  <p class="text-sm font-medium">VR AR Developer</p>
+                  <p class="text-xs text-[var(--bms-muted)] mt-1">Angola, Benguela · Офисный · Фиксированная</p>
+                  <p class="text-xs text-[var(--bms-muted)]">Albanian C1</p>
+                  <p class="text-sm text-[var(--bms-muted)] mt-2">Experience working with platforms: Unity, Unreal Engine, Unreal Development Kit (UDK)...</p>
+                  <div class="flex flex-wrap gap-1.5 mt-3">
+                    <span class="px-2 py-0.5 rounded-md bg-white/5 text-xs">Amazon AWS</span>
+                    <span class="px-2 py-0.5 rounded-md bg-white/5 text-xs">Atlassian Jira</span>
+                    <span class="px-2 py-0.5 rounded-md bg-white/5 text-xs">CI/CD</span>
+                  </div>
+                </div>
+              </div>
+              <div class="text-right shrink-0">
+                <p class="font-semibold">3000 USD</p>
+                <p class="text-xs text-[var(--bms-muted)]">в месяц</p>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <!-- Пагинация -->
+        <div class="flex items-center justify-between mt-8 text-sm text-[var(--bms-muted)]">
+          <button class="hover:text-[var(--bms-text)]">← Назад</button>
+          <div class="flex items-center gap-2">
+            <button class="w-8 h-8 rounded-lg bg-white/10 text-[var(--bms-text)] font-medium">1</button>
+            <button class="w-8 h-8 rounded-lg hover:bg-white/5">2</button>
+          </div>
+          <button class="hover:text-[var(--bms-text)]">Далее →</button>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script src="js/theme.js"></script>
+</body>
+</html>

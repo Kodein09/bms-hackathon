@@ -26,6 +26,19 @@ app.add_middleware(
 )
 
 
+@app.get("/", tags=["system"])
+async def root() -> JSONResponse:
+    return JSONResponse(
+        {
+            "name": "BMS API",
+            "status": "ok",
+            "docs": "/docs",
+            "health": "/health",
+            "frontend": "http://127.0.0.1:8081/index.html",
+        }
+    )
+
+
 @app.middleware("http")
 async def request_logging_middleware(request: Request, call_next: Callable):
     started_at = time.perf_counter()

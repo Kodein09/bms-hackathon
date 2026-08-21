@@ -52,8 +52,7 @@ async def save_upload(upload: UploadFile, user_id: UUID, direction: DocumentDire
         raise DocumentValidationError("Файл пустой или повреждён")
 
     try:
-        mime_type = detect_mime(content)
-        validate_mime(extension, mime_type)
+        mime_type = validate_mime(extension, detect_mime(content), content)
     except (RuntimeError, ValueError) as exc:
         raise DocumentValidationError(str(exc)) from exc
 

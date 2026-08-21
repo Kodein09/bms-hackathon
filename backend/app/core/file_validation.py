@@ -1,4 +1,6 @@
+from io import BytesIO
 from pathlib import Path
+from zipfile import BadZipFile, ZipFile
 
 ALLOWED_EXTENSIONS: set[str] = {
     "jpg", "jpeg", "png", "gif", "bmp", "svg", "webp",
@@ -54,6 +56,31 @@ def detect_mime(content: bytes) -> str:
     return magic.from_buffer(content[:1024], mime=True)
 
 
-def validate_mime(extension: str, mime_type: str) -> None:
-    if mime_type not in MIME_TYPES[extension]:
+def detect_office_mime(extension: str, content: bytes, mime_type: str) -> str:
+    office_types = {
+        "docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "pptx": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        "odt": "application/vnd.oasis.opendocument.text",
+    }
+    office_markers = {
+        "docx": "wordprocessingml",
+        "xlsx": "spreadsheetml",
+        "pptx": "presentationml",
+        "odt": "opendocument",
+    }
+    if extension not in office_types or mime_type != "application/zip":
+        return mime_type
+    try:
+        with ZipFile(BytesIO(content)) as archive:
+            content_types = archive.read("[Content_Types].xml").decode("utf-8", errors="ignore")
+    except (BadZipFile, KeyError, UnicodeDecodeError):
+        return mime_type
+    return office_types[extension] if office_markers[extension] in content_types else mime_type
+
+
+def validate_mime(extension: str, mime_type: str, content: bytes = b"") -> str:
+    detected_type = detect_office_mime(extension, content, mime_type)
+    if detected_type not in MIME_TYPES[extension]:
         raise ValueError("MIME-тип не соответствует расширению")
+    return detected_type

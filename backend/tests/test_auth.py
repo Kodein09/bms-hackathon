@@ -1,5 +1,7 @@
 from collections.abc import AsyncGenerator
+from io import BytesIO
 from pathlib import Path
+from zipfile import ZIP_DEFLATED, ZipFile
 
 import pytest
 import pytest_asyncio
@@ -163,6 +165,18 @@ PNG_1X1 = (
 PDF_MINIMAL = b"%PDF-1.4\n1 0 obj\n<<>>\nendobj\n%%EOF\n"
 
 
+def office_fixture(kind: str) -> bytes:
+    marker = {
+        "docx": "wordprocessingml",
+        "xlsx": "spreadsheetml",
+        "pptx": "presentationml",
+    }[kind]
+    stream = BytesIO()
+    with ZipFile(stream, "w", ZIP_DEFLATED) as archive:
+        archive.writestr("[Content_Types].xml", f"<Types><Default ContentType=\"{marker}\"/></Types>")
+    return stream.getvalue()
+
+
 async def create_test_user(client: AsyncClient, username: str = "document_user") -> tuple[str, str]:
     registration = await client.post(
         "/api/v1/auth/register",
@@ -248,3 +262,17 @@ async def test_document_upload_rejects_oversized_file(client: AsyncClient) -> No
     assert response.status_code == 200
     assert response.json()[0]["success"] is False
     assert "слишком большой" in response.json()[0]["error"]
+
+
+@pytest.mark.asyncio
+async def test_docx_zip_container_is_detected_by_internal_type(client: AsyncClient) -> None:
+    _, token = await create_test_user(client, "office_user")
+    response = await client.post(
+        "/api/v1/documents/upload",
+        headers={"Authorization": f"Bearer {token}"},
+        files=[("files", ("contract.docx", office_fixture("docx"), "application/vnd.openxmlformats-officedocument.wordprocessingml.document"))],
+    )
+
+    assert response.status_code == 200
+    assert response.json()[0]["success"] is True
+    assert response.json()[0]["document"]["mime_type"] == "application/vnd.openxmlformats-officedocument.wordprocessingml.document"

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BMS — Вход</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root, [data-theme="dark"] { --bg:#0c0c0e; --card:#16161a; --border:#2a2a32; --text:#e4e4e7; --muted:#a1a1aa; }
+    [data-theme="light"] { --bg:#f4f4f5; --card:#fff; --border:#e4e4e7; --text:#18181b; --muted:#71717a; }
+    body { background:var(--bg); color:var(--text); font-family:Inter, sans-serif; }
+    input { background:color-mix(in srgb, var(--card) 85%, white 15%); border:1px solid var(--border); color:var(--text); }
+  </style>
+</head>
+<body class="min-h-screen grid place-items-center p-6">
+  <main class="w-full max-w-md">
+    <a href="index.html" class="text-sm text-[var(--muted)]">← Вернуться в BMS</a>
+    <section class="mt-5 rounded-2xl border border-[var(--border)] bg-[var(--card)] p-7 shadow-2xl">
+      <div class="mb-6"><div class="text-2xl font-bold">BMS</div><p class="mt-1 text-sm text-[var(--muted)]">Вход в рабочее пространство</p></div>
+      <div class="mb-5 flex gap-2 border-b border-[var(--border)] text-sm">
+        <button id="login-tab" class="border-b-2 border-indigo-500 px-2 pb-3 font-medium">Войти</button>
+        <button id="register-tab" class="px-2 pb-3 text-[var(--muted)]">Регистрация</button>
+      </div>
+      <form id="auth-form" class="space-y-4">
+        <label class="block text-sm">Логин или email<input id="username" required class="mt-1.5 w-full rounded-xl px-4 py-3" autocomplete="username"></label>
+        <label id="email-wrap" class="hidden block text-sm">Email<input id="email" class="mt-1.5 w-full rounded-xl px-4 py-3" type="email" autocomplete="email"></label>
+        <label class="block text-sm">Пароль<input id="password" required class="mt-1.5 w-full rounded-xl px-4 py-3" type="password" minlength="8" autocomplete="current-password"></label>
+        <button class="w-full rounded-xl bg-indigo-600 px-4 py-3 font-medium text-white hover:bg-indigo-500" type="submit">Войти</button>
+      </form>
+      <p id="auth-message" class="mt-4 min-h-5 text-sm text-[var(--muted)]"></p>
+    </section>
+  </main>
+  <script src="js/api.js"></script>
+  <script>
+    let registerMode = false;
+    const form = document.querySelector('#auth-form');
+    const submit = form.querySelector('button');
+    const message = document.querySelector('#auth-message');
+    const emailWrap = document.querySelector('#email-wrap');
+    document.querySelector('#login-tab').onclick = () => setMode(false);
+    document.querySelector('#register-tab').onclick = () => setMode(true);
+    function setMode(value) {
+      registerMode = value; emailWrap.classList.toggle('hidden', !value);
+      submit.textContent = value ? 'Создать аккаунт' : 'Войти';
+      document.querySelector('#login-tab').classList.toggle('border-indigo-500', !value);
+      document.querySelector('#register-tab').classList.toggle('border-indigo-500', value);
+    }
+    form.onsubmit = async (event) => {
+      event.preventDefault(); message.textContent = 'Проверяем данные...';
+      try {
+        if (registerMode) await bmsRegister(username.value, email.value, password.value);
+        await bmsLogin(username.value, password.value);
+        location.href = 'my.html';
+      } catch (error) { message.textContent = error.message; }
+    };
+  </script>
+</body>
+</html>

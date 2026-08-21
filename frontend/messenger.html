@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BMS Messenger</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script> 
+    tailwind.config = {
+      darkMode: ['selector', '[data-theme="dark"]'],
+      theme: { extend: { fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] } } }
+    }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root, [data-theme="dark"] {
+      --bms-bg: #0c0c0e; --bms-card: #16161a; --bms-border: #2a2a32;
+      --bms-text: #e4e4e7; --bms-muted: #a1a1aa; --bms-header: rgba(12,12,14,0.9);
+      --bms-sidebar: #111114; --bms-input: #1c1c22;
+    }
+    [data-theme="light"] {
+      --bms-bg: #f4f4f5; --bms-card: #ffffff; --bms-border: #e4e4e7;
+      --bms-text: #18181b; --bms-muted: #71717a; --bms-header: rgba(244,244,245,0.95);
+      --bms-sidebar: #fafafa; --bms-input: #f4f4f5;
+    }
+    body { background: var(--bms-bg); color: var(--bms-text); transition: background 0.35s, color 0.35s; }
+    .chat-item {
+      transition: background 0.2s ease, border-color 0.2s ease;
+      border: 1px solid transparent;
+    }
+    .chat-item:hover, .chat-item.active {
+      background: rgba(255,255,255,0.05);
+      border-color: rgba(255,255,255,0.15);
+    }
+    [data-theme="light"] .chat-item:hover,
+    [data-theme="light"] .chat-item.active {
+      background: rgba(0,0,0,0.04);
+      border-color: rgba(0,0,0,0.12);
+    }
+    .msg-bubble { max-width: 70%; }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+  </style>
+</head>
+<body class="font-sans h-screen flex flex-col overflow-hidden">
+  <!-- Header -->
+  <header class="shrink-0 border-b border-[var(--bms-border)] bg-[var(--bms-header)] backdrop-blur-md h-14 flex items-center px-4">
+    <div class="flex items-center gap-3">
+      <a href="index.html" class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center">
+          <span class="text-white font-bold text-sm">B</span>
+        </div>
+        <span class="font-semibold">BMS <span class="text-[var(--bms-muted)] font-normal">Messenger</span></span>
+      </a>
+      <nav class="hidden md:flex items-center gap-1 ml-6 text-sm">
+        <a href="index.html" class="px-3 py-1.5 rounded-lg text-[var(--bms-muted)] hover:bg-white/5">Главная</a>
+        <a href="exchange.html" class="px-3 py-1.5 rounded-lg text-[var(--bms-muted)] hover:bg-white/5">Exchange</a>
+        <a href="my.html" class="px-3 py-1.5 rounded-lg text-[var(--bms-muted)] hover:bg-white/5">My</a>
+        <a href="messenger.html" class="px-3 py-1.5 rounded-lg bg-white/10 font-medium">Messenger</a>
+        <a href="iam.html" class="px-3 py-1.5 rounded-lg text-[var(--bms-muted)] hover:bg-white/5">IAM</a>
+      </nav>
+    </div>
+    <div class="ml-auto flex items-center gap-2">
+      <button data-theme-toggle class="p-2 rounded-full hover:bg-white/10">
+        <svg data-icon="dark" class="w-5 h-5 text-[var(--bms-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+        <svg data-icon="light" class="w-5 h-5 text-[var(--bms-muted)] hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="flex-1 flex overflow-hidden">
+    <!-- Left sidebar - chat list -->
+    <aside class="w-80 border-r border-[var(--bms-border)] bg-[var(--bms-sidebar)] flex flex-col">
+      <div class="p-4 border-b border-[var(--bms-border)]">
+        <div class="relative">
+          <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[var(--bms-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+          <input type="text" placeholder="Поиск чатов..." class="w-full pl-9 pr-3 py-2 rounded-xl bg-[var(--bms-input)] border border-[var(--bms-border)] text-sm">
+        </div>
+      </div>
+
+      <div class="flex-1 overflow-y-auto p-2 space-y-1">
+        <div class="chat-item active flex items-center gap-3 p-3 rounded-xl cursor-pointer">
+          <div class="w-11 h-11 rounded-full bg-indigo-500/20 flex items-center justify-center text-indigo-400 font-semibold shrink-0">АК</div>
+          <div class="flex-1 min-w-0">
+            <div class="flex justify-between items-baseline">
+              <p class="font-medium truncate">Алексей Ковалёв</p>
+              <span class="text-xs text-[var(--bms-muted)]">11:37</span>
+            </div>
+            <p class="text-sm text-[var(--bms-muted)] truncate">Привет! Когда можем созвониться?</p>
+          </div>
+        </div>
+
+        <div class="chat-item flex items-center gap-3 p-3 rounded-xl cursor-pointer">
+          <div class="w-11 h-11 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 font-semibold shrink-0">MA</div>
+          <div class="flex-1 min-w-0">
+            <div class="flex justify-between items-baseline">
+              <p class="font-medium truncate">Mukhammad Azimov</p>
+              <span class="text-xs text-[var(--bms-muted)]">Вчера</span>
+            </div>
+            <p class="text-sm text-[var(--bms-muted)] truncate">Отправил обновлённое резюме</p>
+          </div>
+        </div>
+
+        <div class="chat-item flex items-center gap-3 p-3 rounded-xl cursor-pointer">
+          <div class="w-11 h-11 rounded-full bg-violet-500/20 flex items-center justify-center text-violet-400 font-semibold shrink-0">PA</div>
+          <div class="flex-1 min-w-0">
+            <div class="flex justify-between items-baseline">
+              <p class="font-medium truncate">Parth Arun</p>
+              <span class="text-xs text-[var(--bms-muted)]">Пн</span>
+            </div>
+            <p class="text-sm text-[var(--bms-muted)] truncate">Спасибо за обратную связь</p>
+          </div>
+        </div>
+
+        <div class="chat-item flex items-center gap-3 p-3 rounded-xl cursor-pointer">
+          <div class="w-11 h-11 rounded-full bg-amber-500/20 flex items-center justify-center text-amber-400 font-semibold shrink-0">JG</div>
+          <div class="flex-1 min-w-0">
+            <div class="flex justify-between items-baseline">
+              <p class="font-medium truncate">Jorge Gerd</p>
+              <span class="text-xs text-[var(--bms-muted)]">Сб</span>
+            </div>
+            <p class="text-sm text-[var(--bms-muted)] truncate">Готов к собеседованию</p>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Chat area -->
+    <main class="flex-1 flex flex-col bg-[var(--bms-bg)]">
+      <!-- Chat header -->
+      <div class="h-16 border-b border-[var(--bms-border)] flex items-center px-6 gap-4">
+        <div class="w-10 h-10 rounded-full bg-indigo-500/20 flex items-center justify-center text-indigo-400 font-semibold">АК</div>
+        <div>
+          <p class="font-medium">Алексей Ковалёв</p>
+          <p class="text-xs text-[var(--bms-muted)]">в сети</p>
+        </div>
+      </div>
+
+      <!-- Messages -->
+      <div class="flex-1 overflow-y-auto p-6 space-y-4">
+        <div class="flex justify-start">
+          <div class="msg-bubble bg-[var(--bms-card)] rounded-2xl rounded-tl-md px-4 py-2.5 text-sm">
+            Привет! Видел твоё резюме, очень интересно.
+          </div>
+        </div>
+        <div class="flex justify-start">
+          <div class="msg-bubble bg-[var(--bms-card)] rounded-2xl rounded-tl-md px-4 py-2.5 text-sm">
+            Когда можем созвониться по поводу позиции Frontend?
+          </div>
+        </div>
+        <div class="flex justify-end">
+          <div class="msg-bubble bg-indigo-600 text-white rounded-2xl rounded-tr-md px-4 py-2.5 text-sm">
+            Привет! Могу завтра в 15:00 или 17:00. Как удобнее?
+          </div>
+        </div>
+        <div class="flex justify-start">
+          <div class="msg-bubble bg-[var(--bms-card)] rounded-2xl rounded-tl-md px-4 py-2.5 text-sm">
+            Давай в 15:00, отлично. Скину ссылку на Zoom.
+          </div>
+        </div>
+      </div>
+
+      <!-- Input -->
+      <div class="p-4 border-t border-[var(--bms-border)]">
+        <div class="flex items-center gap-3">
+          <button class="p-2 rounded-xl hover:bg-white/5 text-[var(--bms-muted)]">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
+          </button>
+          <input type="text" placeholder="Написать сообщение..." class="flex-1 px-4 py-2.5 rounded-xl bg-[var(--bms-input)] border border-[var(--bms-border)] text-sm focus:border-indigo-500 outline-none">
+          <button class="p-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+          </button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/theme.js"></script>
+</body>
+</html>

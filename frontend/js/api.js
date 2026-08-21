@@ -9,10 +9,34 @@ function bmsAuthHeaders(extra = {}) {
 }
 
 async function bmsApi(path, options = {}) {
-  const response = await fetch(`${BMS_API_URL}${path}`, {
+  let response = await fetch(`${BMS_API_URL}${path}`, {
     ...options,
     headers: bmsAuthHeaders(options.headers || {}),
   });
+  const refreshToken = localStorage.getItem(BMS_REFRESH_TOKEN_KEY);
+  const canRefresh = response.status === 401 && refreshToken
+    && !path.includes('/auth/login') && !path.includes('/auth/refresh');
+  if (canRefresh) {
+    try {
+      const refreshResponse = await fetch(`${BMS_API_URL}/auth/refresh`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ refresh_token: refreshToken }),
+      });
+      if (!refreshResponse.ok) throw new Error('refresh failed');
+      const tokens = await refreshResponse.json();
+      localStorage.setItem(BMS_ACCESS_TOKEN_KEY, tokens.access_token);
+      localStorage.setItem(BMS_REFRESH_TOKEN_KEY, tokens.refresh_token);
+      response = await fetch(`${BMS_API_URL}${path}`, {
+        ...options,
+        headers: bmsAuthHeaders(options.headers || {}),
+      });
+    } catch (_) {
+      bmsLogout();
+      window.location.href = 'auth.html';
+      throw new Error('Сессия истекла. Войдите снова.');
+    }
+  }
   if (!response.ok) {
     let detail = `HTTP ${response.status}`;
     try { detail = (await response.json()).detail || detail; } catch (_) {}

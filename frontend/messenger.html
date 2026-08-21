@@ -40,115 +40,31 @@
     .msg-bubble { max-width: 70%; }
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
-
-    /* ===== Unified Nav with animated underline ===== */
-    .nav-link {
-      position: relative;
-      padding: 6px 12px;
-      font-size: 0.875rem;
-      color: var(--bms-muted);
-      transition: color 0.2s ease;
-      text-decoration: none;
-    }
-    .nav-link:hover { color: var(--bms-text); }
-    .nav-link::after {
-      content: '';
-      position: absolute;
-      left: 50%;
-      bottom: 0;
-      width: 0;
-      height: 2px;
-      background: #818cf8;
-      border-radius: 1px;
-      transform: translateX(-50%);
-      transition: width 0.3s cubic-bezier(0.22, 1, 0.36, 1);
-    }
-    .nav-link:hover::after { width: 60%; }
-    .nav-link.active {
-      color: var(--bms-text);
-      font-weight: 500;
-    }
-    .nav-link.active::after { width: 80%; }
   </style>
 </head>
 <body class="font-sans h-screen flex flex-col overflow-hidden">
   <!-- Header -->
-  <!-- ===== HEADER ===== -->
-  <header class="sticky top-0 z-50 border-b border-[var(--bms-border)] bg-[var(--bms-header)] backdrop-blur-md">
-    <div class="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between">
-      <div class="flex items-center gap-6">
-        <div class="relative">
-          <button data-dropdown-btn="apps" class="p-2 rounded-lg hover:bg-white/10 transition">
-            <svg class="w-5 h-5 text-[var(--bms-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
-            </svg>
-          </button>
-          <div data-dropdown="apps" class="hidden absolute left-0 top-12 w-64 bg-[var(--bms-card)] border border-[var(--bms-border)] rounded-xl shadow-2xl py-2 z-50">
-            <div class="px-4 py-2 text-xs text-[var(--bms-muted)] uppercase tracking-wider">C&C Culture and Code</div>
-            <a href="#" class="block px-4 py-2.5 text-sm hover:bg-white/5">Документация</a>
-            <a href="#" class="block px-4 py-2.5 text-sm hover:bg-white/5">Поддержка</a>
-            <a href="#" class="block px-4 py-2.5 text-sm hover:bg-white/5">Конфиденциальность</a>
-            <a href="#" class="block px-4 py-2.5 text-sm hover:bg-white/5">О нас</a>
-            <div class="border-t border-[var(--bms-border)] my-2"></div>
-            <div class="px-4 py-2 text-sm text-[var(--bms-muted)]">
-              Наши контакты:<br>
-              <span class="text-[var(--bms-text)] font-medium">8 777 121 51 31</span>
-            </div>
-          </div>
+  <header class="shrink-0 border-b border-[var(--bms-border)] bg-[var(--bms-header)] backdrop-blur-md h-14 flex items-center px-4">
+    <div class="flex items-center gap-3">
+      <a href="index.html" class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center">
+          <span class="text-white font-bold text-sm">B</span>
         </div>
-
-        <a href="index.html" class="flex items-center gap-2">
-          <div class="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center">
-            <span class="text-white font-bold text-sm">B</span>
-          </div>
-          <span class="font-semibold text-lg">BMS</span>
-        </a>
-
-        <nav class="hidden md:flex items-center gap-1 text-sm">
-          <a href="index.html" class="nav-link">Главная</a>
-          <a href="exchange.html" class="nav-link">Hiring</a>
-          <a href="messenger.html" class="nav-link active">Messenger</a>
-          <a href="iam.html" class="nav-link">IAM</a>
-          <a href="#" class="nav-link">Billing</a>
-          <a href="#" class="nav-link">Tracker</a>
-          <a href="archive.html" class="nav-link">Archive</a>
-        </nav>
-      </div>
-
-      <div class="flex items-center gap-1">
-        <button data-theme-toggle class="p-2 rounded-full hover:bg-white/10" title="Сменить тему">
-          <svg data-icon="dark" class="w-5 h-5 text-[var(--bms-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
-          <svg data-icon="light" class="w-5 h-5 text-[var(--bms-muted)] hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
-        </button>
-
-        <div class="relative">
-          <button data-dropdown-btn="notif" class="p-2 rounded-full hover:bg-white/10 relative">
-            <svg class="w-5 h-5 text-[var(--bms-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
-            <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full"></span>
-          </button>
-          <div data-dropdown="notif" class="hidden absolute right-0 top-12 w-80 bg-[var(--bms-card)] border border-[var(--bms-border)] rounded-xl shadow-2xl z-50 overflow-hidden">
-            <div class="px-4 py-3 border-b border-[var(--bms-border)] font-medium text-sm">Уведомления</div>
-            <div class="p-8 text-center">
-              <p class="text-sm text-[var(--bms-muted)]">В данный момент нет входящих уведомлений</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="relative">
-          <button data-dropdown-btn="profile" class="w-9 h-9 rounded-full bg-[var(--bms-card)] border border-[var(--bms-border)] flex items-center justify-center hover:border-white/40 transition">
-            <svg class="w-5 h-5 text-[var(--bms-muted)]" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-          </button>
-          <div data-dropdown="profile" class="hidden absolute right-0 top-12 w-56 bg-[var(--bms-card)] border border-[var(--bms-border)] rounded-xl shadow-2xl py-2 z-50">
-            <a href="my.html" class="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-white/5">Мой профиль</a>
-            <a href="#" class="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-white/5">Команда</a>
-            <div class="border-t border-[var(--bms-border)] my-1"></div>
-            <a href="#" class="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-white/5">Настройки</a>
-            <a href="#" class="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-white/5">Пригласить в BMS</a>
-            <div class="border-t border-[var(--bms-border)] my-1"></div>
-            <a href="#" data-logout class="flex items-center gap-3 px-4 py-2.5 text-sm text-red-400 hover:bg-red-500/10">Выйти</a>
-          </div>
-        </div>
-      </div>
+        <span class="font-semibold">BMS <span class="text-[var(--bms-muted)] font-normal">Messenger</span></span>
+      </a>
+      <nav class="hidden md:flex items-center gap-1 ml-6 text-sm">
+        <a href="index.html" class="px-3 py-1.5 rounded-lg text-[var(--bms-muted)] hover:bg-white/5">Главная</a>
+        <a href="exchange.html" class="px-3 py-1.5 rounded-lg text-[var(--bms-muted)] hover:bg-white/5">Exchange</a>
+        <a href="my.html" class="px-3 py-1.5 rounded-lg text-[var(--bms-muted)] hover:bg-white/5">My</a>
+        <a href="messenger.html" class="px-3 py-1.5 rounded-lg bg-white/10 font-medium">Messenger</a>
+        <a href="iam.html" class="px-3 py-1.5 rounded-lg text-[var(--bms-muted)] hover:bg-white/5">IAM</a>
+      </nav>
+    </div>
+    <div class="ml-auto flex items-center gap-2">
+      <button data-theme-toggle class="p-2 rounded-full hover:bg-white/10">
+        <svg data-icon="dark" class="w-5 h-5 text-[var(--bms-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+        <svg data-icon="light" class="w-5 h-5 text-[var(--bms-muted)] hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+      </button>
     </div>
   </header>
 
@@ -163,7 +79,7 @@
       </div>
 
       <div class="flex-1 overflow-y-auto p-2 space-y-1">
-        <div class="chat-item active flex items-center gap-3 p-3 rounded-xl cursor-pointer">
+        <div class="chat-item active flex items-center gap-3 p-3 rounded-xl cursor-pointer" data-chat="alexey" data-name="Алексей Ковалёв" data-initials="АК">
           <div class="w-11 h-11 rounded-full bg-indigo-500/20 flex items-center justify-center text-indigo-400 font-semibold shrink-0">АК</div>
           <div class="flex-1 min-w-0">
             <div class="flex justify-between items-baseline">
@@ -174,7 +90,7 @@
           </div>
         </div>
 
-        <div class="chat-item flex items-center gap-3 p-3 rounded-xl cursor-pointer">
+        <div class="chat-item flex items-center gap-3 p-3 rounded-xl cursor-pointer" data-chat="mukhammad" data-name="Mukhammad Azimov" data-initials="MA">
           <div class="w-11 h-11 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 font-semibold shrink-0">MA</div>
           <div class="flex-1 min-w-0">
             <div class="flex justify-between items-baseline">
@@ -185,7 +101,7 @@
           </div>
         </div>
 
-        <div class="chat-item flex items-center gap-3 p-3 rounded-xl cursor-pointer">
+        <div class="chat-item flex items-center gap-3 p-3 rounded-xl cursor-pointer" data-chat="parth" data-name="Parth Arun" data-initials="PA">
           <div class="w-11 h-11 rounded-full bg-violet-500/20 flex items-center justify-center text-violet-400 font-semibold shrink-0">PA</div>
           <div class="flex-1 min-w-0">
             <div class="flex justify-between items-baseline">
@@ -196,7 +112,7 @@
           </div>
         </div>
 
-        <div class="chat-item flex items-center gap-3 p-3 rounded-xl cursor-pointer">
+        <div class="chat-item flex items-center gap-3 p-3 rounded-xl cursor-pointer" data-chat="jorge" data-name="Jorge Gerd" data-initials="JG">
           <div class="w-11 h-11 rounded-full bg-amber-500/20 flex items-center justify-center text-amber-400 font-semibold shrink-0">JG</div>
           <div class="flex-1 min-w-0">
             <div class="flex justify-between items-baseline">
@@ -213,15 +129,15 @@
     <main class="flex-1 flex flex-col bg-[var(--bms-bg)]">
       <!-- Chat header -->
       <div class="h-16 border-b border-[var(--bms-border)] flex items-center px-6 gap-4">
-        <div class="w-10 h-10 rounded-full bg-indigo-500/20 flex items-center justify-center text-indigo-400 font-semibold">АК</div>
+        <div id="chat-initials" class="w-10 h-10 rounded-full bg-indigo-500/20 flex items-center justify-center text-indigo-400 font-semibold">АК</div>
         <div>
-          <p class="font-medium">Алексей Ковалёв</p>
+          <p id="chat-name" class="font-medium">Алексей Ковалёв</p>
           <p class="text-xs text-[var(--bms-muted)]">в сети</p>
         </div>
       </div>
 
       <!-- Messages -->
-      <div class="flex-1 overflow-y-auto p-6 space-y-4">
+      <div id="messages" class="flex-1 overflow-y-auto p-6 space-y-4">
         <div class="flex justify-start">
           <div class="msg-bubble bg-[var(--bms-card)] rounded-2xl rounded-tl-md px-4 py-2.5 text-sm">
             Привет! Видел твоё резюме, очень интересно.
@@ -250,8 +166,8 @@
           <button class="p-2 rounded-xl hover:bg-white/5 text-[var(--bms-muted)]">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
           </button>
-          <input type="text" placeholder="Написать сообщение..." class="flex-1 px-4 py-2.5 rounded-xl bg-[var(--bms-input)] border border-[var(--bms-border)] text-sm focus:border-indigo-500 outline-none">
-          <button class="p-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white">
+          <input id="message-input" type="text" placeholder="Написать сообщение..." class="flex-1 px-4 py-2.5 rounded-xl bg-[var(--bms-input)] border border-[var(--bms-border)] text-sm focus:border-indigo-500 outline-none">
+          <button id="send-message" class="p-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white" type="button">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
           </button>
         </div>
@@ -260,6 +176,51 @@
   </div>
 
   <script src="js/theme.js"></script>
-  <script src="js/header.js"></script>
+  <script src="js/api.js"></script>
+  <script>
+    const messages = document.querySelector('#messages');
+    const input = document.querySelector('#message-input');
+    const sendButton = document.querySelector('#send-message');
+    const chatItems = [...document.querySelectorAll('[data-chat]')];
+    let activeChat = 'alexey';
+    const initialMessages = {
+      alexey: [
+        ['in', 'Привет! Видел твоё резюме, очень интересно.'],
+        ['in', 'Когда можем созвониться по поводу позиции Frontend?'],
+        ['out', 'Привет! Могу завтра в 15:00 или 17:00. Как удобнее?'],
+        ['in', 'Давай в 15:00, отлично. Скину ссылку на Zoom.'],
+      ],
+      mukhammad: [['in', 'Отправил обновлённое резюме']],
+      parth: [['in', 'Спасибо за обратную связь']],
+      jorge: [['in', 'Готов к собеседованию']],
+    };
+    function readMessages(chat) {
+      return JSON.parse(localStorage.getItem(`bms-chat-${chat}`) || 'null') || initialMessages[chat] || [];
+    }
+    function renderMessages() {
+      messages.innerHTML = readMessages(activeChat).map(([side, text]) => `<div class="flex ${side === 'out' ? 'justify-end' : 'justify-start'}"><div class="msg-bubble ${side === 'out' ? 'bg-indigo-600 text-white rounded-tr-md' : 'bg-[var(--bms-card)] rounded-tl-md'} rounded-2xl px-4 py-2.5 text-sm">${text.replace(/[&<>]/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[char]))}</div></div>`).join('');
+      messages.scrollTop = messages.scrollHeight;
+    }
+    function selectChat(item) {
+      activeChat = item.dataset.chat;
+      chatItems.forEach(chat => chat.classList.toggle('active', chat === item));
+      document.querySelector('#chat-name').textContent = item.dataset.name;
+      document.querySelector('#chat-initials').textContent = item.dataset.initials;
+      renderMessages();
+    }
+    function sendMessage() {
+      const text = input.value.trim();
+      if (!text) return;
+      const chatMessages = readMessages(activeChat);
+      chatMessages.push(['out', text]);
+      localStorage.setItem(`bms-chat-${activeChat}`, JSON.stringify(chatMessages));
+      input.value = '';
+      renderMessages();
+    }
+    chatItems.forEach(item => item.addEventListener('click', () => selectChat(item)));
+    sendButton.addEventListener('click', sendMessage);
+    input.addEventListener('keydown', event => { if (event.key === 'Enter') sendMessage(); });
+    renderMessages();
+  </script>
 </body>
 </html>

@@ -1,0 +1,16 @@
+fastapi
+uvicorn[standard]
+sqlalchemy
+greenlet
+alembic
+python-dotenv
+pydantic-settings
+python-jose[cryptography]
+passlib[bcrypt]
+bcrypt<4.1
+python-multipart
+aiosqlite
+email-validator
+python-magic
+Pillow
+PyPDF2

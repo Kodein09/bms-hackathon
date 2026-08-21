@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BMS Academy</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root,[data-theme="dark"]{--bg:#0c0c0e;--card:#16161a;--border:#2a2a32;--text:#e4e4e7;--muted:#a1a1aa;--header:rgba(12,12,14,.9)}
+    [data-theme="light"]{--bg:#f4f4f5;--card:#fff;--border:#e4e4e7;--text:#18181b;--muted:#71717a;--header:rgba(244,244,245,.95)}
+    body{background:var(--bg);color:var(--text);font-family:Inter,sans-serif}.course{border:1px solid var(--border);transition:.2s}.course:hover{transform:translateY(-2px);border-color:#818cf8;box-shadow:0 12px 30px #0004}
+  </style>
+</head>
+<body class="min-h-screen">
+  <header class="sticky top-0 z-10 border-b border-[var(--border)] bg-[var(--header)] px-4 backdrop-blur-md">
+    <div class="mx-auto flex h-14 max-w-7xl items-center justify-between"><a href="index.html" class="flex items-center gap-2"><span class="grid h-8 w-8 place-items-center rounded-full bg-indigo-600 font-bold text-white">B</span><span class="font-semibold">BMS <span class="font-normal text-[var(--muted)]">Academy</span></span></a><nav class="hidden gap-1 text-sm md:flex"><a class="rounded-lg px-3 py-2 text-[var(--muted)] hover:bg-white/5" href="index.html">Главная</a><a class="rounded-lg px-3 py-2 text-[var(--muted)] hover:bg-white/5" href="my.html">My</a><a class="rounded-lg bg-white/10 px-3 py-2" href="academy.html">Academy</a><a class="rounded-lg px-3 py-2 text-[var(--muted)] hover:bg-white/5" href="tracker.html">Tracker</a></nav><button data-theme-toggle class="p-2 text-[var(--muted)]" title="Сменить тему">◐</button></div>
+  </header>
+  <main class="mx-auto max-w-7xl px-4 py-8 sm:px-6">
+    <div class="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-end"><div><p class="text-sm text-indigo-400">Развитие навыков</p><h1 class="mt-1 text-3xl font-semibold">Academy</h1><p class="mt-2 text-[var(--muted)]">Курсы, которые помогают двигаться к следующему уровню.</p></div><div class="rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 py-3 text-sm"><span id="progress-label">0% завершено</span><div class="mt-2 h-1.5 w-40 overflow-hidden rounded-full bg-white/10"><div id="progress-bar" class="h-full rounded-full bg-indigo-500" style="width:0%"></div></div></div></div>
+    <div id="course-list" class="grid gap-5 md:grid-cols-2 lg:grid-cols-3"></div>
+  </main>
+  <script src="js/theme.js"></script><script>
+    const courses=[{id:'backend',title:'Backend на FastAPI',level:'Практика',lessons:8,color:'indigo',description:'API, авторизация, базы данных и асинхронные сервисы.'},{id:'frontend',title:'Frontend без хаоса',level:'Основы',lessons:6,color:'sky',description:'Компоненты, состояния и понятная интеграция с API.'},{id:'security',title:'Безопасность продукта',level:'Продвинутый',lessons:5,color:'emerald',description:'Токены, права доступа, валидация файлов и защита данных.'}];
+    const progress=JSON.parse(localStorage.getItem('bms-academy-progress')||'{}');
+    function render(){document.querySelector('#course-list').innerHTML=courses.map(course=>{const done=progress[course.id]||0;return `<article class="course rounded-2xl bg-[var(--card)] p-5"><div class="mb-5 flex items-center justify-between"><span class="rounded-lg bg-${course.color}-500/15 px-3 py-1.5 text-xs font-medium text-${course.color}-400">${course.level}</span><span class="text-xs text-[var(--muted)]">${course.lessons} уроков</span></div><h2 class="text-lg font-semibold">${course.title}</h2><p class="mt-2 min-h-12 text-sm leading-relaxed text-[var(--muted)]">${course.description}</p><div class="mt-5 flex items-center justify-between text-xs"><span class="text-[var(--muted)]">${done}/${course.lessons} уроков</span><button data-course="${course.id}" class="rounded-lg bg-indigo-600 px-3 py-2 font-medium text-white hover:bg-indigo-500">${done===course.lessons?'Повторить':'Продолжить'}</button></div><div class="mt-3 h-1.5 overflow-hidden rounded-full bg-white/10"><div class="h-full rounded-full bg-indigo-500" style="width:${done/course.lessons*100}%"></div></div></article>`}).join('');document.querySelectorAll('[data-course]').forEach(button=>button.onclick=()=>{const course=courses.find(item=>item.id===button.dataset.course);progress[course.id]=Math.min(course.lessons,(progress[course.id]||0)+1);localStorage.setItem('bms-academy-progress',JSON.stringify(progress));render();updateTotal()});updateTotal()}
+    function updateTotal(){const total=courses.reduce((sum,c)=>sum+c.lessons,0),done=courses.reduce((sum,c)=>sum+(progress[c.id]||0),0),percent=Math.round(done/total*100);document.querySelector('#progress-label').textContent=`${percent}% завершено`;document.querySelector('#progress-bar').style.width=`${percent}%`}
+    render();
+  </script>
+</body>
+</html>

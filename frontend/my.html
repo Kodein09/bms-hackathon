@@ -92,113 +92,38 @@
       border-color: #6366f1 !important;
       box-shadow: 0 0 0 3px rgba(99,102,241,0.25);
     }
-
-    /* ===== Unified Nav with animated underline ===== */
-    .nav-link {
-      position: relative;
-      padding: 6px 12px;
-      font-size: 0.875rem;
-      color: var(--bms-muted);
-      transition: color 0.2s ease;
-      text-decoration: none;
-    }
-    .nav-link:hover { color: var(--bms-text); }
-    .nav-link::after {
-      content: '';
-      position: absolute;
-      left: 50%;
-      bottom: 0;
-      width: 0;
-      height: 2px;
-      background: #818cf8;
-      border-radius: 1px;
-      transform: translateX(-50%);
-      transition: width 0.3s cubic-bezier(0.22, 1, 0.36, 1);
-    }
-    .nav-link:hover::after { width: 60%; }
-    .nav-link.active {
-      color: var(--bms-text);
-      font-weight: 500;
-    }
-    .nav-link.active::after { width: 80%; }
   </style>
 </head>
 <body class="font-sans min-h-screen antialiased flex flex-col">
-  <!-- ===== HEADER ===== -->
   <header class="sticky top-0 z-50 border-b border-[var(--bms-border)] bg-[var(--bms-header)] backdrop-blur-md">
-    <div class="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between">
-      <div class="flex items-center gap-6">
-        <div class="relative">
-          <button data-dropdown-btn="apps" class="p-2 rounded-lg hover:bg-white/10 transition">
-            <svg class="w-5 h-5 text-[var(--bms-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
-            </svg>
-          </button>
-          <div data-dropdown="apps" class="hidden absolute left-0 top-12 w-64 bg-[var(--bms-card)] border border-[var(--bms-border)] rounded-xl shadow-2xl py-2 z-50">
-            <div class="px-4 py-2 text-xs text-[var(--bms-muted)] uppercase tracking-wider">C&C Culture and Code</div>
-            <a href="#" class="block px-4 py-2.5 text-sm hover:bg-white/5">Документация</a>
-            <a href="#" class="block px-4 py-2.5 text-sm hover:bg-white/5">Поддержка</a>
-            <a href="#" class="block px-4 py-2.5 text-sm hover:bg-white/5">Конфиденциальность</a>
-            <a href="#" class="block px-4 py-2.5 text-sm hover:bg-white/5">О нас</a>
-            <div class="border-t border-[var(--bms-border)] my-2"></div>
-            <div class="px-4 py-2 text-sm text-[var(--bms-muted)]">
-              Наши контакты:<br>
-              <span class="text-[var(--bms-text)] font-medium">8 777 121 51 31</span>
-            </div>
-          </div>
-        </div>
-
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between">
+      <div class="flex items-center gap-3">
         <a href="index.html" class="flex items-center gap-2">
-          <div class="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center">
+          <div class="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shadow-lg shadow-indigo-500/30">
             <span class="text-white font-bold text-sm">B</span>
           </div>
-          <span class="font-semibold text-lg">BMS</span>
+          <span class="font-semibold text-lg">BMS <span class="text-[var(--bms-muted)] font-normal">My</span></span>
         </a>
-
-        <nav class="hidden md:flex items-center gap-1 text-sm">
-          <a href="index.html" class="nav-link">Главная</a>
-          <a href="exchange.html" class="nav-link">Hiring</a>
-          <a href="messenger.html" class="nav-link">Messenger</a>
-          <a href="iam.html" class="nav-link">IAM</a>
-          <a href="#" class="nav-link">Billing</a>
-          <a href="#" class="nav-link">Tracker</a>
-          <a href="archive.html" class="nav-link">Archive</a>
+        <nav class="hidden md:flex items-center gap-1 ml-6 text-sm">
+          <a href="index.html" class="px-3 py-1.5 rounded-lg text-[var(--bms-muted)] hover:text-[var(--bms-text)] hover:bg-white/5 transition">Главная</a>
+          <a href="exchange.html" class="px-3 py-1.5 rounded-lg text-[var(--bms-muted)] hover:text-[var(--bms-text)] hover:bg-white/5 transition">Exchange</a>
+          <a href="my.html" class="px-3 py-1.5 rounded-lg bg-white/10 text-[var(--bms-text)] font-medium">My</a>
         </nav>
       </div>
-
-      <div class="flex items-center gap-1">
-        <button data-theme-toggle class="p-2 rounded-full hover:bg-white/10" title="Сменить тему">
-          <svg data-icon="dark" class="w-5 h-5 text-[var(--bms-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
-          <svg data-icon="light" class="w-5 h-5 text-[var(--bms-muted)] hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+      <div class="flex items-center gap-2">
+        <button data-theme-toggle class="p-2 rounded-full hover:bg-white/10 transition" title="Сменить тему">
+          <svg data-icon="dark" class="w-5 h-5 text-[var(--bms-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+          </svg>
+          <svg data-icon="light" class="w-5 h-5 text-[var(--bms-muted)] hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+          </svg>
         </button>
-
-        <div class="relative">
-          <button data-dropdown-btn="notif" class="p-2 rounded-full hover:bg-white/10 relative">
-            <svg class="w-5 h-5 text-[var(--bms-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
-            <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full"></span>
-          </button>
-          <div data-dropdown="notif" class="hidden absolute right-0 top-12 w-80 bg-[var(--bms-card)] border border-[var(--bms-border)] rounded-xl shadow-2xl z-50 overflow-hidden">
-            <div class="px-4 py-3 border-b border-[var(--bms-border)] font-medium text-sm">Уведомления</div>
-            <div class="p-8 text-center">
-              <p class="text-sm text-[var(--bms-muted)]">В данный момент нет входящих уведомлений</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="relative">
-          <button data-dropdown-btn="profile" class="w-9 h-9 rounded-full bg-[var(--bms-card)] border border-[var(--bms-border)] flex items-center justify-center hover:border-white/40 transition">
-            <svg class="w-5 h-5 text-[var(--bms-muted)]" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-          </button>
-          <div data-dropdown="profile" class="hidden absolute right-0 top-12 w-56 bg-[var(--bms-card)] border border-[var(--bms-border)] rounded-xl shadow-2xl py-2 z-50">
-            <a href="my.html" class="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-white/5">Мой профиль</a>
-            <a href="#" class="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-white/5">Команда</a>
-            <div class="border-t border-[var(--bms-border)] my-1"></div>
-            <a href="#" class="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-white/5">Настройки</a>
-            <a href="#" class="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-white/5">Пригласить в BMS</a>
-            <div class="border-t border-[var(--bms-border)] my-1"></div>
-            <a href="#" data-logout class="flex items-center gap-3 px-4 py-2.5 text-sm text-red-400 hover:bg-red-500/10">Выйти</a>
-          </div>
-        </div>
+        <a href="my.html" class="w-9 h-9 rounded-full bg-[var(--bms-card)] border border-[var(--bms-border)] flex items-center justify-center">
+          <svg class="w-5 h-5 text-[var(--bms-muted)]" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+          </svg>
+        </a>
       </div>
     </div>
   </header>
@@ -277,8 +202,8 @@
               <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
             </svg>
           </div>
-          <h1 class="text-2xl font-semibold mb-1">Привет, Вильям Тохтахунов</h1>
-          <p class="text-[var(--bms-muted)] text-sm mb-6">Frontend Developer · C&C Culture and Code</p>
+          <h1 id="profile-name" class="text-2xl font-semibold mb-1">Профиль</h1>
+          <p id="profile-position" class="text-[var(--bms-muted)] text-sm mb-6">Загрузка профиля...</p>
           <button class="btn-primary px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-sm">
             Редактировать аккаунт
           </button>
@@ -287,11 +212,11 @@
         <div class="mt-8 grid sm:grid-cols-2 gap-4 max-w-2xl mx-auto">
           <div class="card-hover bg-[var(--bms-card)] rounded-xl p-5">
             <p class="text-xs text-[var(--bms-muted)] uppercase mb-1">Email</p>
-            <p class="font-medium">wt*****@systems</p>
+            <p id="profile-email" class="font-medium">Загрузка...</p>
           </div>
           <div class="card-hover bg-[var(--bms-card)] rounded-xl p-5">
             <p class="text-xs text-[var(--bms-muted)] uppercase mb-1">Роль в команде</p>
-            <p class="font-medium">Frontend Developer</p>
+            <p id="profile-role" class="font-medium">Загрузка...</p>
           </div>
           <div class="card-hover bg-[var(--bms-card)] rounded-xl p-5">
             <p class="text-xs text-[var(--bms-muted)] uppercase mb-1">Стек</p>
@@ -340,11 +265,33 @@
           </div>
         </div>
       </div>
+
+      <section class="mt-8 grid gap-6 lg:grid-cols-2">
+        <div class="card-hover rounded-2xl bg-[var(--bms-card)] p-6">
+          <div class="mb-4 flex items-center justify-between">
+            <h2 class="text-xl font-semibold">Документы</h2>
+            <label class="cursor-pointer rounded-xl bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500">
+              Загрузить
+              <input id="document-files" class="hidden" type="file" multiple>
+            </label>
+          </div>
+          <p id="document-status" class="mb-3 min-h-5 text-sm text-[var(--bms-muted)]"></p>
+          <div id="document-list" class="space-y-2 text-sm text-[var(--bms-muted)]">Загрузка документов...</div>
+        </div>
+
+        <div class="card-hover rounded-2xl bg-[var(--bms-card)] p-6">
+          <div class="mb-4 flex items-center justify-between">
+            <h2 class="text-xl font-semibold">Уведомления <span id="unread-count" class="text-indigo-400">(0)</span></h2>
+            <button id="read-all" class="text-xs text-indigo-400 hover:text-indigo-300">Прочитать все</button>
+          </div>
+          <div id="notification-list" class="space-y-3 text-sm text-[var(--bms-muted)]">Загрузка уведомлений...</div>
+        </div>
+      </section>
     </main>
   </div>
 
   <script src="js/theme.js"></script>
-  <script src="js/header.js"></script>
+  <script src="js/api.js"></script>
   <script>
     const tabs = document.querySelectorAll('[data-tab]');
     const contents = document.querySelectorAll('.tab-content');
@@ -367,6 +314,80 @@
         });
       });
     });
+
+    const documentList = document.querySelector('#document-list');
+    const documentStatus = document.querySelector('#document-status');
+    const notificationList = document.querySelector('#notification-list');
+    const unreadCount = document.querySelector('#unread-count');
+    const user = bmsUser();
+    if (user) {
+      const displayName = user.full_name || user.username;
+      document.querySelector('#profile-name').textContent = `Привет, ${displayName}`;
+      document.querySelector('#profile-position').textContent = user.position || 'Должность не указана';
+      document.querySelector('#profile-email').textContent = user.email;
+      document.querySelector('#profile-role').textContent = user.position || 'Пользователь';
+    }
+
+    function requireLogin() {
+      if (!user || !localStorage.getItem(BMS_ACCESS_TOKEN_KEY)) {
+        location.href = 'auth.html';
+        return false;
+      }
+      return true;
+    }
+
+    async function loadDocuments() {
+      const documents = await bmsApi('/documents/');
+      documentList.innerHTML = documents.length ? documents.map(document => `
+        <div class="flex items-center justify-between gap-3 rounded-xl border border-[var(--bms-border)] p-3">
+          <div class="min-w-0"><div class="truncate font-medium text-[var(--bms-text)]">${document.original_name}</div><div>${document.file_size} bytes · ${document.status}</div></div>
+          <div class="flex shrink-0 gap-2"><button class="text-indigo-400" data-download-document="${document.id}">Скачать</button><button class="text-red-400" data-delete-document="${document.id}">Удалить</button></div>
+        </div>`).join('') : 'Документов пока нет.';
+      documentList.querySelectorAll('[data-delete-document]').forEach(button => {
+        button.onclick = async () => { await bmsApi(`/documents/${button.dataset.deleteDocument}`, { method: 'DELETE' }); await loadDocuments(); };
+      });
+      documentList.querySelectorAll('[data-download-document]').forEach(button => {
+        button.onclick = async () => {
+          const response = await fetch(`${BMS_API_URL}/documents/${button.dataset.downloadDocument}`, { headers: bmsAuthHeaders() });
+          if (!response.ok) throw new Error('Не удалось скачать документ');
+          const blob = await response.blob();
+          const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = 'document'; link.click(); URL.revokeObjectURL(link.href);
+        };
+      });
+    }
+
+    async function loadNotifications() {
+      const data = await bmsApi('/notifications/');
+      unreadCount.textContent = `(${data.unread_count})`;
+      notificationList.innerHTML = data.items.length ? data.items.map(item => `
+        <button class="block w-full rounded-xl border border-[var(--bms-border)] p-3 text-left ${item.is_read ? '' : 'bg-indigo-500/10'}" data-read-notification="${item.id}">
+          <div class="font-medium text-[var(--bms-text)]">${item.title}</div><div>${item.message}</div>
+        </button>`).join('') : 'Новых уведомлений нет.';
+      notificationList.querySelectorAll('[data-read-notification]').forEach(button => {
+        button.onclick = async () => { await bmsApi(`/notifications/${button.dataset.readNotification}/read`, { method: 'PUT' }); await loadNotifications(); };
+      });
+    }
+
+    if (requireLogin()) {
+      loadDocuments().catch(error => { documentList.textContent = error.message; });
+      loadNotifications().catch(error => { notificationList.textContent = error.message; });
+      const socket = bmsWebSocket();
+      if (socket) socket.onmessage = () => loadNotifications();
+    }
+    document.querySelector('#document-files').onchange = async (event) => {
+      if (!requireLogin() || !event.target.files.length) return;
+      const formData = new FormData();
+      [...event.target.files].forEach(file => formData.append('files', file));
+      documentStatus.textContent = 'Загрузка...';
+      try {
+        const results = await bmsApi('/documents/upload', { method: 'POST', body: formData });
+        const failed = results.filter(item => !item.success);
+        documentStatus.textContent = failed.length ? failed.map(item => `${item.filename}: ${item.error}`).join(' ') : 'Файлы загружены.';
+        await loadDocuments(); await loadNotifications();
+      } catch (error) { documentStatus.textContent = error.message; }
+      event.target.value = '';
+    };
+    document.querySelector('#read-all').onclick = async () => { if (requireLogin()) { await bmsApi('/notifications/read-all', { method: 'PUT' }); await loadNotifications(); } };
   </script>
 </body>
 </html>

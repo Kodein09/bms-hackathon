@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BMS Archive</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: ['selector', '[data-theme="dark"]'],
+      theme: { extend: { fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] } } }
+    }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root, [data-theme="dark"] {
+      --bms-bg: #0c0c0e;
+      --bms-card: #16161a;
+      --bms-border: #2a2a32;
+      --bms-text: #e4e4e7;
+      --bms-muted: #a1a1aa;
+      --bms-header: rgba(12,12,14,0.92);
+      --bms-sidebar: #111114;
+      --bms-input: #1c1c22;
+    }
+    [data-theme="light"] {
+      --bms-bg: #f4f4f5;
+      --bms-card: #ffffff;
+      --bms-border: #e4e4e7;
+      --bms-text: #18181b;
+      --bms-muted: #71717a;
+      --bms-header: rgba(244,244,245,0.95);
+      --bms-sidebar: #fafafa;
+      --bms-input: #f4f4f5;
+    }
+    body { background: var(--bms-bg); color: var(--bms-text); transition: background 0.35s, color 0.35s; }
+
+    .nav-item {
+      transition: border-color 0.25s ease, background 0.25s ease;
+      border: 1px solid transparent;
+    }
+    .nav-item:hover, .nav-item.active {
+      background: rgba(255,255,255,0.06);
+      border-color: rgba(255,255,255,0.25);
+    }
+    [data-theme="light"] .nav-item:hover,
+    [data-theme="light"] .nav-item.active {
+      background: rgba(0,0,0,0.04);
+      border-color: rgba(0,0,0,0.15);
+    }
+
+    .doc-card {
+      transition: border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+      border: 1px solid transparent;
+    }
+    .doc-card:hover {
+      border-color: rgba(255,255,255,0.65);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 28px rgba(0,0,0,0.25);
+    }
+    [data-theme="light"] .doc-card:hover {
+      border-color: rgba(0,0,0,0.35);
+      box-shadow: 0 12px 28px rgba(0,0,0,0.08);
+    }
+
+    .dropzone {
+      transition: border-color 0.25s, background 0.25s;
+      border: 2px dashed var(--bms-border);
+    }
+    .dropzone.dragover {
+      border-color: #6366f1;
+      background: rgba(99,102,241,0.08);
+    }
+    .dropzone:hover {
+      border-color: rgba(99,102,241,0.6);
+    }
+
+    .file-chip {
+      transition: border-color 0.2s, background 0.2s;
+      border: 1px solid var(--bms-border);
+    }
+    .file-chip:hover {
+      border-color: rgba(255,255,255,0.4);
+    }
+    [data-theme="light"] .file-chip:hover {
+      border-color: rgba(0,0,0,0.25);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px 4px 8px;
+      border-radius: 9999px;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.01em;
+      border: 1px solid transparent;
+    }
+    .badge-waiting {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(234, 179, 8, 0.1));
+      color: #fbbf24;
+      border-color: rgba(245, 158, 11, 0.25);
+    }
+    .badge-waiting::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #fbbf24;
+      box-shadow: 0 0 0 2px rgba(251, 191, 36, 0.25);
+      animation: pulse-dot 1.8s ease-in-out infinite;
+    }
+    .badge-done {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(5, 150, 105, 0.1));
+      color: #34d399;
+      border-color: rgba(16, 185, 129, 0.25);
+    }
+    .badge-done::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #34d399;
+    }
+    .badge-outgoing {
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(79, 70, 229, 0.1));
+      color: #a5b4fc;
+      border-color: rgba(99, 102, 241, 0.25);
+    }
+    .badge-outgoing::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #a5b4fc;
+      animation: pulse-dot 1.8s ease-in-out infinite;
+    }
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.85); }
+    }
+
+    /* Sidebar collapse */
+    aside {
+      transition: width 0.3s ease, min-width 0.3s ease;
+    }
+    aside.collapsed {
+      width: 72px !important;
+      min-width: 72px !important;
+    }
+    aside.collapsed .sidebar-label,
+    aside.collapsed .sidebar-count,
+    aside.collapsed .sidebar-title,
+    aside.collapsed #btn-send span {
+      display: none;
+    }
+    aside.collapsed #btn-send {
+      padding-left: 0;
+      padding-right: 0;
+      justify-content: center;
+    }
+    aside.collapsed .nav-item {
+      justify-content: center;
+      padding-left: 0;
+      padding-right: 0;
+    }
+    aside.collapsed .collapse-btn span {
+      display: none;
+    }
+    aside.collapsed .collapse-btn {
+      justify-content: center;
+    }
+    .collapse-btn {
+      position: sticky;
+      bottom: 0;
+      background: var(--bms-sidebar);
+      border-top: 1px solid var(--bms-border);
+      margin-top: auto;
+    }
+  </style>
+</head>
+<body class="font-sans min-h-screen flex flex-col antialiased">
+
+  <!-- Header -->
+  <header class="sticky top-0 z-50 border-b border-[var(--bms-border)] bg-[var(--bms-header)] backdrop-blur-md h-14 flex items-center px-4">
+    <div class="flex items-center gap-3">
+      <a href="index.html" class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center">
+          <span class="text-white font-bold text-sm">B</span>
+        </div>
+        <span class="font-semibold">BMS <span class="text-[var(--bms-muted)] font-normal">Archive</span></span>
+      </a>
+      <nav class="hidden md:flex items-center gap-1 ml-6 text-sm">
+        <a href="index.html" class="px-3 py-1.5 rounded-lg text-[var(--bms-muted)] hover:bg-white/5">Главная</a>
+        <a href="exchange.html" class="px-3 py-1.5 rounded-lg text-[var(--bms-muted)] hover:bg-white/5">Exchange</a>
+        <a href="my.html" class="px-3 py-1.5 rounded-lg text-[var(--bms-muted)] hover:bg-white/5">My</a>
+        <a href="messenger.html" class="px-3 py-1.5 rounded-lg text-[var(--bms-muted)] hover:bg-white/5">Messenger</a>
+        <a href="iam.html" class="px-3 py-1.5 rounded-lg text-[var(--bms-muted)] hover:bg-white/5">IAM</a>
+        <a href="archive.html" class="px-3 py-1.5 rounded-lg bg-white/10 font-medium">Archive</a>
+      </nav>
+    </div>
+    <div class="ml-auto flex items-center gap-2">
+      <button data-theme-toggle class="p-2 rounded-full hover:bg-white/10" title="Сменить тему">
+        <svg data-icon="dark" class="w-5 h-5 text-[var(--bms-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+        <svg data-icon="light" class="w-5 h-5 text-[var(--bms-muted)] hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+      </button>
+      <a href="my.html" class="w-9 h-9 rounded-full bg-[var(--bms-card)] border border-[var(--bms-border)] flex items-center justify-center">
+        <svg class="w-5 h-5 text-[var(--bms-muted)]" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+      </a>
+    </div>
+  </header>
+
+  <div class="flex-1 flex overflow-hidden">
+    <!-- Sidebar -->
+    <aside id="sidebar" class="w-64 shrink-0 border-r border-[var(--bms-border)] bg-[var(--bms-sidebar)] flex flex-col">
+      <div class="p-4 flex flex-col flex-1 overflow-y-auto">
+        <button id="btn-send" class="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-sm font-medium transition mb-6">
+          <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+          <span>Отправить документ</span>
+        </button>
+
+        <p class="sidebar-title text-xs text-[var(--bms-muted)] uppercase tracking-wider mb-2 px-1">Мои документы</p>
+        <nav class="space-y-1">
+          <button data-tab="incoming" class="nav-item active w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left text-sm font-medium">
+            <svg class="w-5 h-5 text-[var(--bms-muted)] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            <span class="sidebar-label flex-1">Входящие</span>
+            <span class="sidebar-count text-xs bg-indigo-500/20 text-indigo-400 px-2 py-0.5 rounded-full">3</span>
+          </button>
+          <button data-tab="completed" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left text-sm font-medium">
+            <svg class="w-5 h-5 text-[var(--bms-muted)] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <span class="sidebar-label flex-1">Завершённые</span>
+            <span class="sidebar-count text-xs bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full">5</span>
+          </button>
+          <button data-tab="outgoing" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left text-sm font-medium">
+            <svg class="w-5 h-5 text-[var(--bms-muted)] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+            <span class="sidebar-label flex-1">Исходящие</span>
+            <span class="sidebar-count text-xs bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded-full">2</span>
+          </button>
+        </nav>
+      </div>
+
+      <!-- Fixed collapse button -->
+      <button id="collapse-btn" class="collapse-btn w-full flex items-center gap-2 px-4 py-3 text-sm text-[var(--bms-muted)] hover:bg-white/5 transition">
+        <svg id="collapse-icon" class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7"/></svg>
+        <span>Свернуть</span>
+      </button>
+    </aside>
+
+    <!-- Main content -->
+    <main class="flex-1 overflow-auto p-6">
+
+      <!-- ========== TAB: SEND DOCUMENT ========== -->
+      <div id="tab-send" class="tab-content hidden">
+        <div class="max-w-2xl mx-auto">
+          <h1 class="text-xl font-semibold mb-1">Отправить документ на подпись</h1>
+          <p class="text-sm text-[var(--bms-muted)] mb-6">Загрузите файл и укажите получателей</p>
+
+          <!-- Dropzone -->
+          <div id="dropzone" class="dropzone rounded-2xl p-10 text-center cursor-pointer mb-4">
+            <input type="file" id="file-input" class="hidden" accept=".pdf,.txt,.docx,.xlsx,application/pdf,text/plain,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" multiple>
+            <div class="w-14 h-14 rounded-full bg-indigo-500/10 flex items-center justify-center mx-auto mb-4">
+              <svg class="w-7 h-7 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+            </div>
+            <p class="font-medium mb-1">Перетащите файлы сюда</p>
+            <p class="text-sm text-[var(--bms-muted)] mb-4">или нажмите, чтобы выбрать</p>
+            <p class="text-xs text-[var(--bms-muted)]">Допустимые форматы: <span class="text-indigo-400">PDF, TXT, DOCX, XLSX</span></p>
+          </div>
+
+          <!-- Selected files -->
+          <div id="file-list" class="space-y-2 mb-6 hidden"></div>
+
+          <!-- Recipients -->
+          <div class="bg-[var(--bms-card)] rounded-2xl border border-[var(--bms-border)] p-5 mb-6">
+            <label class="block text-sm font-medium mb-2">Получатели</label>
+            <div class="flex gap-2">
+              <input type="text" id="recipient-input" placeholder="Email или имя сотрудника" class="flex-1 px-4 py-2.5 rounded-xl bg-[var(--bms-input)] border border-[var(--bms-border)] text-sm focus:border-indigo-500 outline-none">
+              <button id="add-recipient" class="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium">Добавить</button>
+            </div>
+            <div id="recipients" class="flex flex-wrap gap-2 mt-3"></div>
+          </div>
+
+          <!-- Message -->
+          <div class="bg-[var(--bms-card)] rounded-2xl border border-[var(--bms-border)] p-5 mb-6">
+            <label class="block text-sm font-medium mb-2">Сообщение (необязательно)</label>
+            <textarea rows="3" placeholder="Добавьте комментарий для получателей..." class="w-full px-4 py-2.5 rounded-xl bg-[var(--bms-input)] border border-[var(--bms-border)] text-sm focus:border-indigo-500 outline-none resize-none"></textarea>
+          </div>
+
+          <div class="flex justify-end gap-3">
+            <button id="cancel-send" class="px-5 py-2.5 rounded-xl text-sm text-[var(--bms-muted)] hover:bg-white/5">Отмена</button>
+            <button id="submit-send" class="px-6 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-sm font-medium disabled:opacity-40 disabled:cursor-not-allowed" disabled>
+              Отправить на подпись
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========== TAB: INCOMING ========== -->
+      <div id="tab-incoming" class="tab-content">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+          <div>
+            <h1 class="text-xl font-semibold">Входящие</h1>
+            <p class="text-sm text-[var(--bms-muted)]">Документы, ожидающие вашей подписи</p>
+          </div>
+          <div class="relative max-w-xs w-full">
+            <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[var(--bms-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            <input type="text" placeholder="Поиск документов..." class="w-full pl-9 pr-4 py-2 rounded-xl bg-[var(--bms-card)] border border-[var(--bms-border)] text-sm">
+          </div>
+        </div>
+
+        <div class="space-y-3">
+          <!-- Doc 1 -->
+          <article class="doc-card bg-[var(--bms-card)] rounded-xl p-5 flex items-start gap-4">
+            <div class="w-11 h-11 rounded-xl bg-red-500/15 flex items-center justify-center shrink-0">
+              <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-start justify-between gap-3">
+                <div>
+                  <h3 class="font-medium">Договор_поставки_Q3.pdf</h3>
+                  <p class="text-sm text-[var(--bms-muted)] mt-0.5">От: Алексей Ковалёв · 2 часа назад</p>
+                </div>
+                <span class="badge badge-waiting shrink-0">Ожидает подписи</span>
+              </div>
+              <div class="flex items-center gap-3 mt-3">
+                <button class="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium">Подписать</button>
+                <button class="px-3 py-1.5 rounded-lg border border-[var(--bms-border)] text-xs hover:bg-white/5">Просмотреть</button>
+                <button class="px-3 py-1.5 rounded-lg text-xs text-[var(--bms-muted)] hover:text-red-400">Отклонить</button>
+              </div>
+            </div>
+          </article>
+
+          <!-- Doc 2 -->
+          <article class="doc-card bg-[var(--bms-card)] rounded-xl p-5 flex items-start gap-4">
+            <div class="w-11 h-11 rounded-xl bg-blue-500/15 flex items-center justify-center shrink-0">
+              <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-start justify-between gap-3">
+                <div>
+                  <h3 class="font-medium">Акт_выполненных_работ_август.docx</h3>
+                  <p class="text-sm text-[var(--bms-muted)] mt-0.5">От: HR Department · Вчера</p>
+                </div>
+                <span class="badge badge-waiting shrink-0">Ожидает подписи</span>
+              </div>
+              <div class="flex items-center gap-3 mt-3">
+                <button class="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium">Подписать</button>
+                <button class="px-3 py-1.5 rounded-lg border border-[var(--bms-border)] text-xs hover:bg-white/5">Просмотреть</button>
+                <button class="px-3 py-1.5 rounded-lg text-xs text-[var(--bms-muted)] hover:text-red-400">Отклонить</button>
+              </div>
+            </div>
+          </article>
+
+          <!-- Doc 3 -->
+          <article class="doc-card bg-[var(--bms-card)] rounded-xl p-5 flex items-start gap-4">
+            <div class="w-11 h-11 rounded-xl bg-emerald-500/15 flex items-center justify-center shrink-0">
+              <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-start justify-between gap-3">
+                <div>
+                  <h3 class="font-medium">Бюджет_Q3_2026.xlsx</h3>
+                  <p class="text-sm text-[var(--bms-muted)] mt-0.5">От: Финансовый отдел · 3 дня назад</p>
+                </div>
+                <span class="badge badge-waiting shrink-0">Ожидает подписи</span>
+              </div>
+              <div class="flex items-center gap-3 mt-3">
+                <button class="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium">Подписать</button>
+                <button class="px-3 py-1.5 rounded-lg border border-[var(--bms-border)] text-xs hover:bg-white/5">Просмотреть</button>
+                <button class="px-3 py-1.5 rounded-lg text-xs text-[var(--bms-muted)] hover:text-red-400">Отклонить</button>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <!-- ========== TAB: COMPLETED ========== -->
+      <div id="tab-completed" class="tab-content hidden">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+          <div>
+            <h1 class="text-xl font-semibold">Завершённые</h1>
+            <p class="text-sm text-[var(--bms-muted)]">Документы с полной подписью</p>
+          </div>
+          <div class="relative max-w-xs w-full">
+            <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[var(--bms-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            <input type="text" placeholder="Поиск документов..." class="w-full pl-9 pr-4 py-2 rounded-xl bg-[var(--bms-card)] border border-[var(--bms-border)] text-sm">
+          </div>
+        </div>
+
+        <div class="space-y-3">
+          <article class="doc-card bg-[var(--bms-card)] rounded-xl p-5 flex items-start gap-4">
+            <div class="w-11 h-11 rounded-xl bg-red-500/15 flex items-center justify-center shrink-0">
+              <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-start justify-between gap-3">
+                <div>
+                  <h3 class="font-medium">NDA_Mukhammad_Azimov.pdf</h3>
+                  <p class="text-sm text-[var(--bms-muted)] mt-0.5">Подписан всеми · 12 авг 2026</p>
+                </div>
+                <span class="badge badge-done shrink-0">Завершён</span>
+              </div>
+              <div class="flex items-center gap-3 mt-3">
+                <button class="px-3 py-1.5 rounded-lg border border-[var(--bms-border)] text-xs hover:bg-white/5">Скачать</button>
+                <button class="px-3 py-1.5 rounded-lg border border-[var(--bms-border)] text-xs hover:bg-white/5">Просмотреть</button>
+              </div>
+            </div>
+          </article>
+
+          <article class="doc-card bg-[var(--bms-card)] rounded-xl p-5 flex items-start gap-4">
+            <div class="w-11 h-11 rounded-xl bg-blue-500/15 flex items-center justify-center shrink-0">
+              <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-start justify-between gap-3">
+                <div>
+                  <h3 class="font-medium">Трудовой_договор_Parth_Arun.docx</h3>
+                  <p class="text-sm text-[var(--bms-muted)] mt-0.5">Подписан всеми · 5 авг 2026</p>
+                </div>
+                <span class="badge badge-done shrink-0">Завершён</span>
+              </div>
+              <div class="flex items-center gap-3 mt-3">
+                <button class="px-3 py-1.5 rounded-lg border border-[var(--bms-border)] text-xs hover:bg-white/5">Скачать</button>
+                <button class="px-3 py-1.5 rounded-lg border border-[var(--bms-border)] text-xs hover:bg-white/5">Просмотреть</button>
+              </div>
+            </div>
+          </article>
+
+          <article class="doc-card bg-[var(--bms-card)] rounded-xl p-5 flex items-start gap-4">
+            <div class="w-11 h-11 rounded-xl bg-emerald-500/15 flex items-center justify-center shrink-0">
+              <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-start justify-between gap-3">
+                <div>
+                  <h3 class="font-medium">Отчёт_по_времени_июль.xlsx</h3>
+                  <p class="text-sm text-[var(--bms-muted)] mt-0.5">Подписан всеми · 1 авг 2026</p>
+                </div>
+                <span class="badge badge-done shrink-0">Завершён</span>
+              </div>
+              <div class="flex items-center gap-3 mt-3">
+                <button class="px-3 py-1.5 rounded-lg border border-[var(--bms-border)] text-xs hover:bg-white/5">Скачать</button>
+                <button class="px-3 py-1.5 rounded-lg border border-[var(--bms-border)] text-xs hover:bg-white/5">Просмотреть</button>
+              </div>
+            </div>
+          </article>
+
+          <article class="doc-card bg-[var(--bms-card)] rounded-xl p-5 flex items-start gap-4">
+            <div class="w-11 h-11 rounded-xl bg-zinc-500/15 flex items-center justify-center shrink-0">
+              <svg class="w-5 h-5 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-start justify-between gap-3">
+                <div>
+                  <h3 class="font-medium">Политика_конфиденциальности.txt</h3>
+                  <p class="text-sm text-[var(--bms-muted)] mt-0.5">Подписан всеми · 28 июл 2026</p>
+                </div>
+                <span class="badge badge-done shrink-0">Завершён</span>
+              </div>
+              <div class="flex items-center gap-3 mt-3">
+                <button class="px-3 py-1.5 rounded-lg border border-[var(--bms-border)] text-xs hover:bg-white/5">Скачать</button>
+                <button class="px-3 py-1.5 rounded-lg border border-[var(--bms-border)] text-xs hover:bg-white/5">Просмотреть</button>
+              </div>
+            </div>
+          </article>
+
+          <article class="doc-card bg-[var(--bms-card)] rounded-xl p-5 flex items-start gap-4">
+            <div class="w-11 h-11 rounded-xl bg-red-500/15 flex items-center justify-center shrink-0">
+              <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-start justify-between gap-3">
+                <div>
+                  <h3 class="font-medium">Акт_сверки_июнь.pdf</h3>
+                  <p class="text-sm text-[var(--bms-muted)] mt-0.5">Подписан всеми · 15 июл 2026</p>
+                </div>
+                <span class="badge badge-done shrink-0">Завершён</span>
+              </div>
+              <div class="flex items-center gap-3 mt-3">
+                <button class="px-3 py-1.5 rounded-lg border border-[var(--bms-border)] text-xs hover:bg-white/5">Скачать</button>
+                <button class="px-3 py-1.5 rounded-lg border border-[var(--bms-border)] text-xs hover:bg-white/5">Просмотреть</button>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <!-- ========== TAB: OUTGOING ========== -->
+      <div id="tab-outgoing" class="tab-content hidden">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+          <div>
+            <h1 class="text-xl font-semibold">Исходящие</h1>
+            <p class="text-sm text-[var(--bms-muted)]">Документы, ожидающие подписи других</p>
+          </div>
+          <div class="relative max-w-xs w-full">
+            <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[var(--bms-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            <input type="text" placeholder="Поиск документов..." class="w-full pl-9 pr-4 py-2 rounded-xl bg-[var(--bms-card)] border border-[var(--bms-border)] text-sm">
+          </div>
+        </div>
+
+        <div class="space-y-3">
+          <article class="doc-card bg-[var(--bms-card)] rounded-xl p-5 flex items-start gap-4">
+            <div class="w-11 h-11 rounded-xl bg-red-500/15 flex items-center justify-center shrink-0">
+              <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-start justify-between gap-3">
+                <div>
+                  <h3 class="font-medium">Оферта_Jorge_Gerd.pdf</h3>
+                  <p class="text-sm text-[var(--bms-muted)] mt-0.5">Ожидает: Jorge Gerd · Отправлено 18 авг</p>
+                </div>
+                <span class="badge badge-outgoing shrink-0">Ожидает ответа</span>
+              </div>
+              <div class="flex items-center gap-3 mt-3">
+                <button class="px-3 py-1.5 rounded-lg border border-[var(--bms-border)] text-xs hover:bg-white/5">Напомнить</button>
+                <button class="px-3 py-1.5 rounded-lg border border-[var(--bms-border)] text-xs hover:bg-white/5">Просмотреть</button>
+                <button class="px-3 py-1.5 rounded-lg text-xs text-[var(--bms-muted)] hover:text-red-400">Отозвать</button>
+              </div>
+            </div>
+          </article>
+
+          <article class="doc-card bg-[var(--bms-card)] rounded-xl p-5 flex items-start gap-4">
+            <div class="w-11 h-11 rounded-xl bg-blue-500/15 flex items-center justify-center shrink-0">
+              <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-start justify-between gap-3">
+                <div>
+                  <h3 class="font-medium">Доп_соглашение_аренда.docx</h3>
+                  <p class="text-sm text-[var(--bms-muted)] mt-0.5">Ожидает: Юридический отдел · Отправлено 15 авг</p>
+                </div>
+                <span class="badge badge-outgoing shrink-0">Ожидает ответа</span>
+              </div>
+              <div class="flex items-center gap-3 mt-3">
+                <button class="px-3 py-1.5 rounded-lg border border-[var(--bms-border)] text-xs hover:bg-white/5">Напомнить</button>
+                <button class="px-3 py-1.5 rounded-lg border border-[var(--bms-border)] text-xs hover:bg-white/5">Просмотреть</button>
+                <button class="px-3 py-1.5 rounded-lg text-xs text-[var(--bms-muted)] hover:text-red-400">Отозвать</button>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script src="js/theme.js"></script>
+  <script>
+    // ===== Tabs =====
+    const tabButtons = document.querySelectorAll('[data-tab]');
+    const tabContents = document.querySelectorAll('.tab-content');
+    const btnSend = document.getElementById('btn-send');
+
+    function showTab(name) {
+      tabButtons.forEach(b => b.classList.remove('active'));
+      tabContents.forEach(c => c.classList.add('hidden'));
+
+      if (name === 'send') {
+        document.getElementById('tab-send').classList.remove('hidden');
+      } else {
+        const btn = document.querySelector(`[data-tab="${name}"]`);
+        if (btn) btn.classList.add('active');
+        const content = document.getElementById('tab-' + name);
+        if (content) content.classList.remove('hidden');
+      }
+    }
+
+    tabButtons.forEach(btn => {
+      btn.addEventListener('click', () => showTab(btn.dataset.tab));
+    });
+
+    btnSend.addEventListener('click', () => {
+      tabButtons.forEach(b => b.classList.remove('active'));
+      showTab('send');
+    });
+
+    document.getElementById('cancel-send').addEventListener('click', () => showTab('incoming'));
+
+    // ===== File Upload =====
+    const dropzone = document.getElementById('dropzone');
+    const fileInput = document.getElementById('file-input');
+    const fileList = document.getElementById('file-list');
+    const submitBtn = document.getElementById('submit-send');
+    let selectedFiles = [];
+
+    const ALLOWED = ['.pdf', '.txt', '.docx', '.xlsx'];
+    const ICONS = {
+      pdf:  { bg: 'bg-red-500/15', text: 'text-red-400', label: 'PDF' },
+      txt:  { bg: 'bg-zinc-500/15', text: 'text-zinc-400', label: 'TXT' },
+      docx: { bg: 'bg-blue-500/15', text: 'text-blue-400', label: 'DOCX' },
+      xlsx: { bg: 'bg-emerald-500/15', text: 'text-emerald-400', label: 'XLSX' }
+    };
+
+    function getExt(name) {
+      return name.slice(name.lastIndexOf('.')).toLowerCase();
+    }
+
+    function isAllowed(file) {
+      return ALLOWED.includes(getExt(file.name));
+    }
+
+    function formatSize(bytes) {
+      if (bytes < 1024) return bytes + ' B';
+      if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+      return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+    }
+
+    function renderFiles() {
+      if (selectedFiles.length === 0) {
+        fileList.classList.add('hidden');
+        submitBtn.disabled = true;
+        return;
+      }
+      fileList.classList.remove('hidden');
+      submitBtn.disabled = false;
+
+      fileList.innerHTML = selectedFiles.map((f, i) => {
+        const ext = getExt(f.name).slice(1);
+        const icon = ICONS[ext] || ICONS.txt;
+        return `
+          <div class="file-chip flex items-center gap-3 px-4 py-3 rounded-xl bg-[var(--bms-card)]">
+            <div class="w-9 h-9 rounded-lg ${icon.bg} flex items-center justify-center shrink-0">
+              <span class="text-xs font-bold ${icon.text}">${icon.label}</span>
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-medium truncate">${f.name}</p>
+              <p class="text-xs text-[var(--bms-muted)]">${formatSize(f.size)}</p>
+            </div>
+            <button data-remove="${i}" class="p-1.5 rounded-lg hover:bg-white/10 text-[var(--bms-muted)] hover:text-red-400">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+          </div>`;
+      }).join('');
+
+      fileList.querySelectorAll('[data-remove]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          selectedFiles.splice(+btn.dataset.remove, 1);
+          renderFiles();
+        });
+      });
+    }
+
+    function addFiles(files) {
+      for (const f of files) {
+        if (!isAllowed(f)) {
+          alert(`Формат ${getExt(f.name)} не поддерживается.\nРазрешены: PDF, TXT, DOCX, XLSX`);
+          continue;
+        }
+        if (!selectedFiles.some(x => x.name === f.name && x.size === f.size)) {
+          selectedFiles.push(f);
+        }
+      }
+      renderFiles();
+    }
+
+    dropzone.addEventListener('click', () => fileInput.click());
+    fileInput.addEventListener('change', () => {
+      addFiles(Array.from(fileInput.files));
+      fileInput.value = '';
+    });
+
+    dropzone.addEventListener('dragover', e => {
+      e.preventDefault();
+      dropzone.classList.add('dragover');
+    });
+    dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+    dropzone.addEventListener('drop', e => {
+      e.preventDefault();
+      dropzone.classList.remove('dragover');
+      addFiles(Array.from(e.dataTransfer.files));
+    });
+
+    // ===== Recipients =====
+    const recipientInput = document.getElementById('recipient-input');
+    const recipientsBox = document.getElementById('recipients');
+    let recipients = [];
+
+    document.getElementById('add-recipient').addEventListener('click', () => {
+      const val = recipientInput.value.trim();
+      if (!val || recipients.includes(val)) return;
+      recipients.push(val);
+      recipientInput.value = '';
+      renderRecipients();
+    });
+
+    recipientInput.addEventListener('keydown', e => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        document.getElementById('add-recipient').click();
+      }
+    });
+
+    function renderRecipients() {
+      recipientsBox.innerHTML = recipients.map((r, i) => `
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-500/15 text-indigo-400 text-xs">
+          ${r}
+          <button data-rm-rec="${i}" class="hover:text-white">×</button>
+        </span>
+      `).join('');
+      recipientsBox.querySelectorAll('[data-rm-rec]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          recipients.splice(+btn.dataset.rmRec, 1);
+          renderRecipients();
+        });
+      });
+    }
+
+    // ===== Submit =====
+    submitBtn.addEventListener('click', () => {
+      if (selectedFiles.length === 0) return;
+      alert(`Отправлено ${selectedFiles.length} файл(ов) на подпись${recipients.length ? ' → ' + recipients.join(', ') : ''}`);
+      selectedFiles = [];
+      recipients = [];
+      renderFiles();
+      renderRecipients();
+      showTab('outgoing');
+    });
+
+    // ===== Sidebar collapse =====
+    const sidebar = document.getElementById('sidebar');
+    const collapseBtn = document.getElementById('collapse-btn');
+    const collapseIcon = document.getElementById('collapse-icon');
+
+    collapseBtn.addEventListener('click', () => {
+      sidebar.classList.toggle('collapsed');
+      const isCollapsed = sidebar.classList.contains('collapsed');
+      collapseIcon.innerHTML = isCollapsed
+        ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7"/>'
+        : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7"/>';
+      collapseBtn.querySelector('span').textContent = isCollapsed ? '' : 'Свернуть';
+    });
+  </script>
+</body>
+</html>

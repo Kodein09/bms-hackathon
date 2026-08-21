@@ -7,6 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from app.api.v1.endpoints.auth import router as auth_router
+from app.api.v1.endpoints.documents import router as documents_router
 from app.api.v1.endpoints.notifications import router as notifications_router
 from app.api.v1.endpoints.notifications import ws_router as notifications_ws_router
 from app.core.config import settings
@@ -40,5 +41,6 @@ async def health() -> JSONResponse:
 
 
 app.include_router(auth_router, prefix="/api/v1")
+app.include_router(documents_router, prefix="/api/v1")
 app.include_router(notifications_router, prefix="/api/v1")
 app.include_router(notifications_ws_router)

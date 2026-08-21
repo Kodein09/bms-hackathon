@@ -1,4 +1,5 @@
 from collections.abc import AsyncGenerator
+from pathlib import Path
 
 import pytest
 import pytest_asyncio
@@ -7,10 +8,13 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 
 from app.db.database import Base, get_db
 from app.main import app
+from app.core.config import settings
 
 
 @pytest_asyncio.fixture
-async def client() -> AsyncGenerator[AsyncClient, None]:
+async def client(tmp_path: Path) -> AsyncGenerator[AsyncClient, None]:
+    original_upload_dir = settings.upload_dir
+    settings.upload_dir = str(tmp_path / "uploads")
     engine = create_async_engine("sqlite+aiosqlite:///:memory:")
     session_factory = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
@@ -26,6 +30,7 @@ async def client() -> AsyncGenerator[AsyncClient, None]:
     async with AsyncClient(transport=transport, base_url="http://test") as test_client:
         yield test_client
     app.dependency_overrides.clear()
+    settings.upload_dir = original_upload_dir
     await engine.dispose()
 
 
@@ -148,3 +153,98 @@ async def test_notifications_flow(client: AsyncClient) -> None:
 
     count = await client.get("/api/v1/notifications/unread-count", headers=headers)
     assert count.json() == {"unread_count": 0}
+
+
+PNG_1X1 = (
+    b"\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01"
+    b"\x08\x06\x00\x00\x00\x1f\x15\xc4\x89\x00\x00\x00\x0dIDAT\x08\xd7c\xf8\xcf\xc0"
+    b"\xf0\x1f\x00\x05\x00\x01\xff\x89\x99=\x1d\x00\x00\x00\x00IEND\xaeB`\x82"
+)
+PDF_MINIMAL = b"%PDF-1.4\n1 0 obj\n<<>>\nendobj\n%%EOF\n"
+
+
+async def create_test_user(client: AsyncClient, username: str = "document_user") -> tuple[str, str]:
+    registration = await client.post(
+        "/api/v1/auth/register",
+        json={
+            "username": username,
+            "email": f"{username}@example.com",
+            "password": "strong-pass-123",
+        },
+    )
+    login = await client.post(
+        "/api/v1/auth/login",
+        data={"username": username, "password": "strong-pass-123"},
+    )
+    return registration.json()["id"], login.json()["access_token"]
+
+
+@pytest.mark.asyncio
+async def test_document_upload_list_and_download(client: AsyncClient) -> None:
+    user_id, token = await create_test_user(client)
+    headers = {"Authorization": f"Bearer {token}"}
+    response = await client.post(
+        "/api/v1/documents/upload",
+        headers=headers,
+        files=[
+            ("files", ("photo.png", PNG_1X1, "image/png")),
+            ("files", ("report.pdf", PDF_MINIMAL, "application/pdf")),
+        ],
+    )
+
+    assert response.status_code == 200
+    results = response.json()
+    print(results)
+    assert [result["success"] for result in results] == [True, True]
+    document_id = results[0]["document"]["id"]
+
+    listed = await client.get("/api/v1/documents/", headers=headers)
+    assert listed.status_code == 200
+    assert len(listed.json()) == 2
+    assert listed.json()[0]["user_id"] == user_id
+
+    downloaded = await client.get(f"/api/v1/documents/{document_id}", headers=headers)
+    assert downloaded.status_code == 200
+    assert downloaded.content == PNG_1X1
+    assert "photo.png" in downloaded.headers["content-disposition"]
+
+    deleted = await client.delete(f"/api/v1/documents/{document_id}", headers=headers)
+    assert deleted.status_code == 204
+    assert (await client.get(f"/api/v1/documents/{document_id}", headers=headers)).status_code == 404
+
+
+@pytest.mark.asyncio
+async def test_document_upload_rejects_unsupported_and_fake_mime(client: AsyncClient) -> None:
+    _, token = await create_test_user(client, "validation_user")
+    headers = {"Authorization": f"Bearer {token}"}
+
+    response = await client.post(
+        "/api/v1/documents/upload",
+        headers=headers,
+        files=[
+            ("files", ("virus.exe", b"MZ\x90\x00", "application/octet-stream")),
+            ("files", ("renamed.txt", PNG_1X1, "text/plain")),
+        ],
+    )
+
+    assert response.status_code == 200
+    results = response.json()
+    assert results[0]["success"] is False
+    assert "не поддерживается" in results[0]["error"]
+    assert results[1]["success"] is False
+    assert "MIME" in results[1]["error"]
+
+
+@pytest.mark.asyncio
+async def test_document_upload_rejects_oversized_file(client: AsyncClient) -> None:
+    _, token = await create_test_user(client, "large_file_user")
+    headers = {"Authorization": f"Bearer {token}"}
+    response = await client.post(
+        "/api/v1/documents/upload",
+        headers=headers,
+        files=[("files", ("large.txt", b"a" * (52_428_800 + 1), "text/plain"))],
+    )
+
+    assert response.status_code == 200
+    assert response.json()[0]["success"] is False
+    assert "слишком большой" in response.json()[0]["error"]

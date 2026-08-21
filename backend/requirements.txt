@@ -11,3 +11,6 @@ bcrypt<4.1
 python-multipart
 aiosqlite
 email-validator
+python-magic
+Pillow
+PyPDF2

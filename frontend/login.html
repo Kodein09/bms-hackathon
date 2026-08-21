@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BMS — Вход</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: ['selector', '[data-theme="dark"]'],
+      theme: { extend: { fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] } } }
+    }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root, [data-theme="dark"] {
+      --bms-bg: #0c0c0e; --bms-card: #16161a; --bms-border: #2a2a32;
+      --bms-text: #e4e4e7; --bms-muted: #a1a1aa; --bms-input: #1c1c22;
+    }
+    [data-theme="light"] {
+      --bms-bg: #f4f4f5; --bms-card: #ffffff; --bms-border: #e4e4e7;
+      --bms-text: #18181b; --bms-muted: #71717a; --bms-input: #f4f4f5;
+    }
+    body { background: var(--bms-bg); color: var(--bms-text); transition: background 0.35s, color 0.35s; }
+    input:focus {
+      border-color: #6366f1 !important;
+      box-shadow: 0 0 0 3px rgba(99,102,241,0.25);
+    }
+  </style>
+</head>
+<body class="font-sans min-h-screen antialiased flex items-center justify-center p-4">
+
+  <div class="w-full max-w-md">
+    <!-- Logo -->
+    <div class="text-center mb-8">
+      <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center mx-auto mb-4 shadow-lg shadow-indigo-500/30">
+        <span class="text-white font-bold text-2xl">B</span>
+      </div>
+      <h1 class="text-2xl font-semibold">BMS</h1>
+      <p class="text-sm text-[var(--bms-muted)] mt-1">C&C Culture and Code</p>
+    </div>
+
+    <!-- Card -->
+    <div class="bg-[var(--bms-card)] border border-[var(--bms-border)] rounded-2xl p-6 sm:p-8">
+      <!-- Tabs -->
+      <div class="flex gap-1 mb-6 p-1 rounded-xl bg-[var(--bms-input)]">
+        <button id="tab-login" class="flex-1 py-2 rounded-lg text-sm font-medium bg-indigo-600 text-white transition">Вход</button>
+        <button id="tab-register" class="flex-1 py-2 rounded-lg text-sm font-medium text-[var(--bms-muted)] hover:text-[var(--bms-text)] transition">Регистрация</button>
+      </div>
+
+      <!-- Login form -->
+      <form id="form-login" class="space-y-4">
+        <div>
+          <label class="block text-sm text-[var(--bms-muted)] mb-1.5">Email</label>
+          <input type="email" required placeholder="you@company.com"
+            class="w-full px-4 py-2.5 rounded-xl bg-[var(--bms-input)] border border-[var(--bms-border)] text-sm outline-none">
+        </div>
+        <div>
+          <label class="block text-sm text-[var(--bms-muted)] mb-1.5">Пароль</label>
+          <input type="password" required placeholder="••••••••"
+            class="w-full px-4 py-2.5 rounded-xl bg-[var(--bms-input)] border border-[var(--bms-border)] text-sm outline-none">
+        </div>
+        <div class="flex items-center justify-between text-sm">
+          <label class="flex items-center gap-2 cursor-pointer text-[var(--bms-muted)]">
+            <input type="checkbox" class="rounded"> Запомнить
+          </label>
+          <a href="#" class="text-indigo-400 hover:text-indigo-300">Забыли пароль?</a>
+        </div>
+        <button type="submit" class="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-sm transition">
+          Войти
+        </button>
+      </form>
+
+      <!-- Register form -->
+      <form id="form-register" class="space-y-4 hidden">
+        <div>
+          <label class="block text-sm text-[var(--bms-muted)] mb-1.5">Имя</label>
+          <input type="text" required placeholder="Вильям Тохтахунов"
+            class="w-full px-4 py-2.5 rounded-xl bg-[var(--bms-input)] border border-[var(--bms-border)] text-sm outline-none">
+        </div>
+        <div>
+          <label class="block text-sm text-[var(--bms-muted)] mb-1.5">Email</label>
+          <input type="email" required placeholder="you@company.com"
+            class="w-full px-4 py-2.5 rounded-xl bg-[var(--bms-input)] border border-[var(--bms-border)] text-sm outline-none">
+        </div>
+        <div>
+          <label class="block text-sm text-[var(--bms-muted)] mb-1.5">Пароль</label>
+          <input type="password" required placeholder="Минимум 8 символов"
+            class="w-full px-4 py-2.5 rounded-xl bg-[var(--bms-input)] border border-[var(--bms-border)] text-sm outline-none">
+        </div>
+        <div>
+          <label class="block text-sm text-[var(--bms-muted)] mb-1.5">Подтвердите пароль</label>
+          <input type="password" required placeholder="••••••••"
+            class="w-full px-4 py-2.5 rounded-xl bg-[var(--bms-input)] border border-[var(--bms-border)] text-sm outline-none">
+        </div>
+        <button type="submit" class="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-sm transition">
+          Создать аккаунт
+        </button>
+      </form>
+    </div>
+
+    <p class="text-center text-xs text-[var(--bms-muted)] mt-6">
+      © 2026 BMS · C&C Culture and Code
+    </p>
+  </div>
+
+  <script src="js/theme.js"></script>
+  <script>
+    const tabLogin = document.getElementById('tab-login');
+    const tabRegister = document.getElementById('tab-register');
+    const formLogin = document.getElementById('form-login');
+    const formRegister = document.getElementById('form-register');
+
+    tabLogin.addEventListener('click', () => {
+      tabLogin.className = 'flex-1 py-2 rounded-lg text-sm font-medium bg-indigo-600 text-white transition';
+      tabRegister.className = 'flex-1 py-2 rounded-lg text-sm font-medium text-[var(--bms-muted)] hover:text-[var(--bms-text)] transition';
+      formLogin.classList.remove('hidden');
+      formRegister.classList.add('hidden');
+    });
+
+    tabRegister.addEventListener('click', () => {
+      tabRegister.className = 'flex-1 py-2 rounded-lg text-sm font-medium bg-indigo-600 text-white transition';
+      tabLogin.className = 'flex-1 py-2 rounded-lg text-sm font-medium text-[var(--bms-muted)] hover:text-[var(--bms-text)] transition';
+      formRegister.classList.remove('hidden');
+      formLogin.classList.add('hidden');
+    });
+
+    formLogin.addEventListener('submit', e => {
+      e.preventDefault();
+      // Имитация входа
+      localStorage.setItem('bms-auth', '1');
+      window.location.href = 'index.html';
+    });
+
+    formRegister.addEventListener('submit', e => {
+      e.preventDefault();
+      localStorage.setItem('bms-auth', '1');
+      window.location.href = 'index.html';
+    });
+  </script>
+</body>
+</html>

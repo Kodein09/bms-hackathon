@@ -202,8 +202,8 @@
               <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
             </svg>
           </div>
-          <h1 class="text-2xl font-semibold mb-1">Привет, Вильям Тохтахунов</h1>
-          <p class="text-[var(--bms-muted)] text-sm mb-6">Frontend Developer · C&C Culture and Code</p>
+          <h1 id="profile-name" class="text-2xl font-semibold mb-1">Профиль</h1>
+          <p id="profile-position" class="text-[var(--bms-muted)] text-sm mb-6">Загрузка профиля...</p>
           <button class="btn-primary px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-sm">
             Редактировать аккаунт
           </button>
@@ -212,11 +212,11 @@
         <div class="mt-8 grid sm:grid-cols-2 gap-4 max-w-2xl mx-auto">
           <div class="card-hover bg-[var(--bms-card)] rounded-xl p-5">
             <p class="text-xs text-[var(--bms-muted)] uppercase mb-1">Email</p>
-            <p class="font-medium">wt*****@systems</p>
+            <p id="profile-email" class="font-medium">Загрузка...</p>
           </div>
           <div class="card-hover bg-[var(--bms-card)] rounded-xl p-5">
             <p class="text-xs text-[var(--bms-muted)] uppercase mb-1">Роль в команде</p>
-            <p class="font-medium">Frontend Developer</p>
+            <p id="profile-role" class="font-medium">Загрузка...</p>
           </div>
           <div class="card-hover bg-[var(--bms-card)] rounded-xl p-5">
             <p class="text-xs text-[var(--bms-muted)] uppercase mb-1">Стек</p>
@@ -320,6 +320,13 @@
     const notificationList = document.querySelector('#notification-list');
     const unreadCount = document.querySelector('#unread-count');
     const user = bmsUser();
+    if (user) {
+      const displayName = user.full_name || user.username;
+      document.querySelector('#profile-name').textContent = `Привет, ${displayName}`;
+      document.querySelector('#profile-position').textContent = user.position || 'Должность не указана';
+      document.querySelector('#profile-email').textContent = user.email;
+      document.querySelector('#profile-role').textContent = user.position || 'Пользователь';
+    }
 
     function requireLogin() {
       if (!user || !localStorage.getItem(BMS_ACCESS_TOKEN_KEY)) {

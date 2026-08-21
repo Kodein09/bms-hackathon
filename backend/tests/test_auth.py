@@ -52,10 +52,14 @@ async def test_auth_flow(client: AsyncClient) -> None:
             "username": "test_user",
             "email": "test@example.com",
             "password": "strong-pass-123",
+            "full_name": "Тестовый Пользователь",
+            "position": "Backend Developer",
         },
     )
     assert registration.status_code == 201
     assert registration.json()["username"] == "test_user"
+    assert registration.json()["full_name"] == "Тестовый Пользователь"
+    assert registration.json()["position"] == "Backend Developer"
     assert "hashed_password" not in registration.json()
 
     duplicate = await client.post(

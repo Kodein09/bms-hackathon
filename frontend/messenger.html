@@ -79,7 +79,7 @@
       </div>
 
       <div class="flex-1 overflow-y-auto p-2 space-y-1">
-        <div class="chat-item active flex items-center gap-3 p-3 rounded-xl cursor-pointer">
+        <div class="chat-item active flex items-center gap-3 p-3 rounded-xl cursor-pointer" data-chat="alexey" data-name="Алексей Ковалёв" data-initials="АК">
           <div class="w-11 h-11 rounded-full bg-indigo-500/20 flex items-center justify-center text-indigo-400 font-semibold shrink-0">АК</div>
           <div class="flex-1 min-w-0">
             <div class="flex justify-between items-baseline">
@@ -90,7 +90,7 @@
           </div>
         </div>
 
-        <div class="chat-item flex items-center gap-3 p-3 rounded-xl cursor-pointer">
+        <div class="chat-item flex items-center gap-3 p-3 rounded-xl cursor-pointer" data-chat="mukhammad" data-name="Mukhammad Azimov" data-initials="MA">
           <div class="w-11 h-11 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 font-semibold shrink-0">MA</div>
           <div class="flex-1 min-w-0">
             <div class="flex justify-between items-baseline">
@@ -101,7 +101,7 @@
           </div>
         </div>
 
-        <div class="chat-item flex items-center gap-3 p-3 rounded-xl cursor-pointer">
+        <div class="chat-item flex items-center gap-3 p-3 rounded-xl cursor-pointer" data-chat="parth" data-name="Parth Arun" data-initials="PA">
           <div class="w-11 h-11 rounded-full bg-violet-500/20 flex items-center justify-center text-violet-400 font-semibold shrink-0">PA</div>
           <div class="flex-1 min-w-0">
             <div class="flex justify-between items-baseline">
@@ -112,7 +112,7 @@
           </div>
         </div>
 
-        <div class="chat-item flex items-center gap-3 p-3 rounded-xl cursor-pointer">
+        <div class="chat-item flex items-center gap-3 p-3 rounded-xl cursor-pointer" data-chat="jorge" data-name="Jorge Gerd" data-initials="JG">
           <div class="w-11 h-11 rounded-full bg-amber-500/20 flex items-center justify-center text-amber-400 font-semibold shrink-0">JG</div>
           <div class="flex-1 min-w-0">
             <div class="flex justify-between items-baseline">
@@ -129,15 +129,15 @@
     <main class="flex-1 flex flex-col bg-[var(--bms-bg)]">
       <!-- Chat header -->
       <div class="h-16 border-b border-[var(--bms-border)] flex items-center px-6 gap-4">
-        <div class="w-10 h-10 rounded-full bg-indigo-500/20 flex items-center justify-center text-indigo-400 font-semibold">АК</div>
+        <div id="chat-initials" class="w-10 h-10 rounded-full bg-indigo-500/20 flex items-center justify-center text-indigo-400 font-semibold">АК</div>
         <div>
-          <p class="font-medium">Алексей Ковалёв</p>
+          <p id="chat-name" class="font-medium">Алексей Ковалёв</p>
           <p class="text-xs text-[var(--bms-muted)]">в сети</p>
         </div>
       </div>
 
       <!-- Messages -->
-      <div class="flex-1 overflow-y-auto p-6 space-y-4">
+      <div id="messages" class="flex-1 overflow-y-auto p-6 space-y-4">
         <div class="flex justify-start">
           <div class="msg-bubble bg-[var(--bms-card)] rounded-2xl rounded-tl-md px-4 py-2.5 text-sm">
             Привет! Видел твоё резюме, очень интересно.
@@ -166,8 +166,8 @@
           <button class="p-2 rounded-xl hover:bg-white/5 text-[var(--bms-muted)]">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
           </button>
-          <input type="text" placeholder="Написать сообщение..." class="flex-1 px-4 py-2.5 rounded-xl bg-[var(--bms-input)] border border-[var(--bms-border)] text-sm focus:border-indigo-500 outline-none">
-          <button class="p-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white">
+          <input id="message-input" type="text" placeholder="Написать сообщение..." class="flex-1 px-4 py-2.5 rounded-xl bg-[var(--bms-input)] border border-[var(--bms-border)] text-sm focus:border-indigo-500 outline-none">
+          <button id="send-message" class="p-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white" type="button">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
           </button>
         </div>
@@ -176,5 +176,51 @@
   </div>
 
   <script src="js/theme.js"></script>
+  <script src="js/api.js"></script>
+  <script>
+    const messages = document.querySelector('#messages');
+    const input = document.querySelector('#message-input');
+    const sendButton = document.querySelector('#send-message');
+    const chatItems = [...document.querySelectorAll('[data-chat]')];
+    let activeChat = 'alexey';
+    const initialMessages = {
+      alexey: [
+        ['in', 'Привет! Видел твоё резюме, очень интересно.'],
+        ['in', 'Когда можем созвониться по поводу позиции Frontend?'],
+        ['out', 'Привет! Могу завтра в 15:00 или 17:00. Как удобнее?'],
+        ['in', 'Давай в 15:00, отлично. Скину ссылку на Zoom.'],
+      ],
+      mukhammad: [['in', 'Отправил обновлённое резюме']],
+      parth: [['in', 'Спасибо за обратную связь']],
+      jorge: [['in', 'Готов к собеседованию']],
+    };
+    function readMessages(chat) {
+      return JSON.parse(localStorage.getItem(`bms-chat-${chat}`) || 'null') || initialMessages[chat] || [];
+    }
+    function renderMessages() {
+      messages.innerHTML = readMessages(activeChat).map(([side, text]) => `<div class="flex ${side === 'out' ? 'justify-end' : 'justify-start'}"><div class="msg-bubble ${side === 'out' ? 'bg-indigo-600 text-white rounded-tr-md' : 'bg-[var(--bms-card)] rounded-tl-md'} rounded-2xl px-4 py-2.5 text-sm">${text.replace(/[&<>]/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[char]))}</div></div>`).join('');
+      messages.scrollTop = messages.scrollHeight;
+    }
+    function selectChat(item) {
+      activeChat = item.dataset.chat;
+      chatItems.forEach(chat => chat.classList.toggle('active', chat === item));
+      document.querySelector('#chat-name').textContent = item.dataset.name;
+      document.querySelector('#chat-initials').textContent = item.dataset.initials;
+      renderMessages();
+    }
+    function sendMessage() {
+      const text = input.value.trim();
+      if (!text) return;
+      const chatMessages = readMessages(activeChat);
+      chatMessages.push(['out', text]);
+      localStorage.setItem(`bms-chat-${activeChat}`, JSON.stringify(chatMessages));
+      input.value = '';
+      renderMessages();
+    }
+    chatItems.forEach(item => item.addEventListener('click', () => selectChat(item)));
+    sendButton.addEventListener('click', sendMessage);
+    input.addEventListener('keydown', event => { if (event.key === 'Enter') sendMessage(); });
+    renderMessages();
+  </script>
 </body>
 </html>

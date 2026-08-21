@@ -59,11 +59,11 @@ async function bmsLogin(username, password) {
   return user;
 }
 
-async function bmsRegister(username, email, password) {
+async function bmsRegister(username, email, password, fullName = null, position = null) {
   return bmsApi('/auth/register', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ username, email, password }),
+    body: JSON.stringify({ username, email, password, full_name: fullName || null, position: position || null }),
   });
 }
 

@@ -25,6 +25,8 @@
       <form id="auth-form" class="space-y-4">
         <label class="block text-sm">Логин или email<input id="username" required class="mt-1.5 w-full rounded-xl px-4 py-3" autocomplete="username"></label>
         <label id="email-wrap" class="hidden block text-sm">Email<input id="email" class="mt-1.5 w-full rounded-xl px-4 py-3" type="email" autocomplete="email"></label>
+        <label id="full-name-wrap" class="hidden block text-sm">Имя<input id="full-name" class="mt-1.5 w-full rounded-xl px-4 py-3" autocomplete="name"></label>
+        <label id="position-wrap" class="hidden block text-sm">Должность<input id="position" class="mt-1.5 w-full rounded-xl px-4 py-3" autocomplete="organization-title"></label>
         <label class="block text-sm">Пароль<input id="password" required class="mt-1.5 w-full rounded-xl px-4 py-3" type="password" minlength="8" autocomplete="current-password"></label>
         <button class="w-full rounded-xl bg-indigo-600 px-4 py-3 font-medium text-white hover:bg-indigo-500" type="submit">Войти</button>
       </form>
@@ -38,10 +40,12 @@
     const submit = form.querySelector('button');
     const message = document.querySelector('#auth-message');
     const emailWrap = document.querySelector('#email-wrap');
+    const fullNameWrap = document.querySelector('#full-name-wrap');
+    const positionWrap = document.querySelector('#position-wrap');
     document.querySelector('#login-tab').onclick = () => setMode(false);
     document.querySelector('#register-tab').onclick = () => setMode(true);
     function setMode(value) {
-      registerMode = value; emailWrap.classList.toggle('hidden', !value);
+      registerMode = value; emailWrap.classList.toggle('hidden', !value); fullNameWrap.classList.toggle('hidden', !value); positionWrap.classList.toggle('hidden', !value);
       submit.textContent = value ? 'Создать аккаунт' : 'Войти';
       document.querySelector('#login-tab').classList.toggle('border-indigo-500', !value);
       document.querySelector('#register-tab').classList.toggle('border-indigo-500', value);
@@ -49,7 +53,7 @@
     form.onsubmit = async (event) => {
       event.preventDefault(); message.textContent = 'Проверяем данные...';
       try {
-        if (registerMode) await bmsRegister(username.value, email.value, password.value);
+        if (registerMode) await bmsRegister(username.value, email.value, password.value, document.querySelector('#full-name').value, document.querySelector('#position').value);
         await bmsLogin(username.value, password.value);
         location.href = 'my.html';
       } catch (error) { message.textContent = error.message; }

@@ -35,6 +35,8 @@ async def register(user_data: UserCreate, db: Annotated[AsyncSession, Depends(ge
     user = User(
         username=user_data.username,
         email=user_data.email,
+        full_name=user_data.full_name,
+        position=user_data.position,
         hashed_password=hash_password(user_data.password),
     )
     db.add(user)

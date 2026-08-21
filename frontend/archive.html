@@ -308,7 +308,7 @@
           </div>
         </div>
 
-        <div class="space-y-3">
+        <div id="incoming-documents" class="space-y-3">
           <!-- Doc 1 -->
           <article class="doc-card bg-[var(--bms-card)] rounded-xl p-5 flex items-start gap-4">
             <div class="w-11 h-11 rounded-xl bg-red-500/15 flex items-center justify-center shrink-0">
@@ -387,7 +387,7 @@
           </div>
         </div>
 
-        <div class="space-y-3">
+        <div id="completed-documents" class="space-y-3">
           <article class="doc-card bg-[var(--bms-card)] rounded-xl p-5 flex items-start gap-4">
             <div class="w-11 h-11 rounded-xl bg-red-500/15 flex items-center justify-center shrink-0">
               <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
@@ -498,7 +498,7 @@
           </div>
         </div>
 
-        <div class="space-y-3">
+        <div id="outgoing-documents" class="space-y-3">
           <article class="doc-card bg-[var(--bms-card)] rounded-xl p-5 flex items-start gap-4">
             <div class="w-11 h-11 rounded-xl bg-red-500/15 flex items-center justify-center shrink-0">
               <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
@@ -725,6 +725,7 @@
         recipients = [];
         renderFiles();
         renderRecipients();
+        await loadArchiveDocuments();
         showTab('outgoing');
       } catch (error) {
         alert(error.message);
@@ -733,6 +734,74 @@
         submitBtn.textContent = 'Отправить на подпись';
       }
     });
+
+    // ===== Live documents from the backend =====
+    const documentContainers = {
+      incoming: document.getElementById('incoming-documents'),
+      completed: document.getElementById('completed-documents'),
+      outgoing: document.getElementById('outgoing-documents'),
+    };
+
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[char]));
+    }
+
+    function formatDate(value) {
+      return new Date(value).toLocaleDateString('ru-RU');
+    }
+
+    async function downloadDocument(documentId, originalName) {
+      const response = await fetch(`${BMS_API_URL}/documents/${documentId}`, { headers: bmsAuthHeaders() });
+      if (!response.ok) throw new Error('Документ недоступен');
+      const blob = await response.blob();
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = originalName;
+      link.click();
+      URL.revokeObjectURL(link.href);
+    }
+
+    function renderDocumentList(container, documents, mode) {
+      if (!documents.length) {
+        container.innerHTML = '<p class="py-8 text-center text-sm text-[var(--bms-muted)]">Документов пока нет</p>';
+        return;
+      }
+      container.innerHTML = documents.map(document => `
+        <article class="doc-card bg-[var(--bms-card)] rounded-xl p-5 flex items-start gap-4">
+          <div class="w-11 h-11 rounded-xl bg-indigo-500/15 flex items-center justify-center shrink-0"><span class="text-xs font-bold text-indigo-400">${escapeHtml(document.extension.toUpperCase())}</span></div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-start justify-between gap-3"><div><h3 class="font-medium truncate">${escapeHtml(document.original_name)}</h3><p class="text-sm text-[var(--bms-muted)] mt-0.5">${formatDate(document.created_at)} · ${document.file_size} байт</p></div><span class="badge ${mode === 'completed' ? 'badge-done' : 'badge-outgoing'} shrink-0">${escapeHtml(document.status)}</span></div>
+            <div class="flex flex-wrap items-center gap-3 mt-3"><button data-download="${document.id}" class="px-3 py-1.5 rounded-lg border border-[var(--bms-border)] text-xs hover:bg-white/5">Просмотреть</button>${mode !== 'completed' ? `<button data-complete="${document.id}" class="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs">Завершить</button>` : ''}<button data-delete="${document.id}" class="px-3 py-1.5 rounded-lg text-xs text-red-400 hover:bg-red-500/10">Удалить</button></div>
+          </div>
+        </article>`).join('');
+      container.querySelectorAll('[data-download]').forEach(button => button.onclick = async () => {
+        const item = documents.find(document => document.id === button.dataset.download);
+        try { await downloadDocument(item.id, item.original_name); } catch (error) { alert(error.message); }
+      });
+      container.querySelectorAll('[data-complete]').forEach(button => button.onclick = async () => {
+        try { await bmsApi(`/documents/${button.dataset.complete}/status`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: 'completed' }) }); await loadArchiveDocuments(); } catch (error) { alert(error.message); }
+      });
+      container.querySelectorAll('[data-delete]').forEach(button => button.onclick = async () => {
+        try { await bmsApi(`/documents/${button.dataset.delete}`, { method: 'DELETE' }); await loadArchiveDocuments(); } catch (error) { alert(error.message); }
+      });
+    }
+
+    async function loadArchiveDocuments() {
+      if (!bmsUser() || !localStorage.getItem(BMS_ACCESS_TOKEN_KEY)) {
+        window.location.href = 'auth.html';
+        return;
+      }
+      try {
+        const documents = await bmsApi('/documents/?limit=100&sort_by=created_at&sort_order=desc');
+        renderDocumentList(documentContainers.incoming, documents.filter(document => document.direction === 'incoming'), 'incoming');
+        renderDocumentList(documentContainers.completed, documents.filter(document => document.status === 'completed'), 'completed');
+        renderDocumentList(documentContainers.outgoing, documents.filter(document => document.direction === 'outgoing' && document.status !== 'completed'), 'outgoing');
+      } catch (error) {
+        Object.values(documentContainers).forEach(container => { container.innerHTML = `<p class="py-8 text-center text-sm text-red-400">${escapeHtml(error.message)}</p>`; });
+      }
+    }
+
+    loadArchiveDocuments();
 
     // ===== Sidebar collapse =====
     const sidebar = document.getElementById('sidebar');

@@ -224,8 +224,8 @@
 
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <div class="mb-8 animate-fade-in">
-      <p class="text-[var(--bms-muted)] text-sm mb-1">Четверг, 20 августа</p>
-      <h1 class="text-2xl sm:text-3xl font-semibold tracking-tight">Добрый день, Вильям 👋</h1>
+      <p id="today-label" class="text-[var(--bms-muted)] text-sm mb-1"></p>
+      <h1 id="welcome-title" class="text-2xl sm:text-3xl font-semibold tracking-tight">Добрый день 👋</h1>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -270,7 +270,7 @@
               <p class="text-sm text-[var(--bms-muted)] leading-relaxed">Войти, зарегистрироваться и проверить доступ</p>
             </a>
 
-            <a href="#" class="module-card group bg-[var(--bms-card)] rounded-2xl p-5 block animate-fade-in delay-4">
+            <a href="messenger.html" class="module-card group bg-[var(--bms-card)] rounded-2xl p-5 block animate-fade-in delay-4">
               <div class="flex items-start justify-between mb-3">
                 <div class="w-11 h-11 rounded-xl bg-blue-500/15 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                   <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -320,7 +320,7 @@
               <p class="text-sm text-[var(--bms-muted)] leading-relaxed">Обучайтесь, получайте сертификаты и развивайте навыки</p>
             </a>
 
-            <a href="#" class="module-card group bg-[var(--bms-card)] rounded-2xl p-5 block animate-fade-in delay-8">
+            <a href="archive.html" class="module-card group bg-[var(--bms-card)] rounded-2xl p-5 block animate-fade-in delay-8">
               <div class="flex items-start justify-between mb-3">
                 <div class="w-11 h-11 rounded-xl bg-teal-500/15 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                   <svg class="w-5 h-5 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -451,6 +451,7 @@
   </footer> 
 
   <script src="js/theme.js"></script>
+  <script src="js/api.js"></script>
   <script>  
   // Apps menu
   const appsBtn = document.getElementById('apps-btn');
@@ -463,6 +464,22 @@
   // Profile
   const profileBtn = document.getElementById('profile-btn');
   const profileMenu = document.getElementById('profile-menu');
+
+  const user = bmsUser();
+  const welcomeName = user?.full_name || user?.username || 'пользователь';
+  document.getElementById('welcome-title').textContent = `Добрый день, ${welcomeName} 👋`;
+  document.getElementById('today-label').textContent = new Intl.DateTimeFormat('ru-RU', { weekday: 'long', day: 'numeric', month: 'long' }).format(new Date());
+
+  async function loadDashboardNotifications() {
+    if (!user || !localStorage.getItem(BMS_ACCESS_TOKEN_KEY)) return;
+    const data = await bmsApi('/notifications/?limit=5');
+    const list = document.querySelector('#notif-menu > div:last-child');
+    const badge = document.querySelector('#notif-btn span');
+    badge?.classList.toggle('hidden', data.unread_count === 0);
+    list.innerHTML = data.items.length ? data.items.map(item => `<button data-dashboard-notification="${item.id}" class="block w-full border-b border-[var(--bms-border)] px-4 py-3 text-left ${item.is_read ? '' : 'bg-indigo-500/10'}"><div class="text-sm font-medium">${item.title}</div><div class="mt-1 text-xs text-[var(--bms-muted)]">${item.message}</div></button>`).join('') : '<div class="p-8 text-center text-sm text-[var(--bms-muted)]">Новых уведомлений нет.</div>';
+    list.querySelectorAll('[data-dashboard-notification]').forEach(button => button.onclick = async () => { await bmsApi(`/notifications/${button.dataset.dashboardNotification}/read`, { method: 'PUT' }); await loadDashboardNotifications(); });
+  }
+  loadDashboardNotifications().catch(() => {});
 
   function closeAllMenus() {
     appsMenu?.classList.add('hidden');

@@ -36,6 +36,41 @@
       border-color: rgba(0,0,0,0.35);
       box-shadow: 0 12px 28px rgba(0,0,0,0.08);
     }
+
+    /* ===== Unified Nav with animated underline ===== */
+    .nav-link {
+      position: relative;
+      padding: 6px 12px;
+      font-size: 0.875rem;
+      color: var(--bms-muted);
+      transition: color 0.2s ease;
+      text-decoration: none;
+    }
+    .nav-link:hover {
+      color: var(--bms-text);
+    }
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      width: 0;
+      height: 2px;
+      background: #818cf8;
+      border-radius: 1px;
+      transform: translateX(-50%);
+      transition: width 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .nav-link:hover::after {
+      width: 60%;
+    }
+    .nav-link.active {
+      color: var(--bms-text);
+      font-weight: 500;
+    }
+    .nav-link.active::after {
+      width: 80%;
+    }
   </style>
 </head>
 <body class="font-sans min-h-screen antialiased flex flex-col">
@@ -47,12 +82,12 @@
       <div class="flex items-center gap-6">
         <!-- Apps menu -->
         <div class="relative">
-          <button id="apps-btn" class="p-2 rounded-lg hover:bg-white/10 transition">
+          <button data-dropdown-btn="apps" class="p-2 rounded-lg hover:bg-white/10 transition">
             <svg class="w-5 h-5 text-[var(--bms-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
             </svg>
           </button>
-          <div id="apps-menu" class="hidden absolute left-0 top-12 w-64 bg-[var(--bms-card)] border border-[var(--bms-border)] rounded-xl shadow-2xl py-2 z-50">
+          <div data-dropdown="apps" class="hidden absolute left-0 top-12 w-64 bg-[var(--bms-card)] border border-[var(--bms-border)] rounded-xl shadow-2xl py-2 z-50">
             <div class="px-4 py-2 text-xs text-[var(--bms-muted)] uppercase tracking-wider">C&C Culture and Code</div>
             <a href="#" class="block px-4 py-2.5 text-sm hover:bg-white/5">Документация</a>
             <a href="#" class="block px-4 py-2.5 text-sm hover:bg-white/5">Поддержка</a>
@@ -74,13 +109,13 @@
         </a>
 
         <nav class="hidden md:flex items-center gap-1 text-sm">
-          <a href="index.html" class="px-3 py-1.5 rounded-lg bg-white/10 font-medium">Главная</a>
-          <a href="exchange.html" class="px-3 py-1.5 rounded-lg text-[var(--bms-muted)] hover:bg-white/5">Hiring</a>
-          <a href="messenger.html" class="px-3 py-1.5 rounded-lg text-[var(--bms-muted)] hover:bg-white/5">Messenger</a>
-          <a href="iam.html" class="px-3 py-1.5 rounded-lg text-[var(--bms-muted)] hover:bg-white/5">IAM</a>
-          <a href="#" class="px-3 py-1.5 rounded-lg text-[var(--bms-muted)] hover:bg-white/5">Billing</a>
-          <a href="#" class="px-3 py-1.5 rounded-lg text-[var(--bms-muted)] hover:bg-white/5">Tracker</a>
-          <a href="archive.html" class="px-3 py-1.5 rounded-lg text-[var(--bms-muted)] hover:bg-white/5">Archive</a>
+          <a href="index.html" class="nav-link active">Главная</a>
+          <a href="exchange.html" class="nav-link">Hiring</a>
+          <a href="messenger.html" class="nav-link">Messenger</a>
+          <a href="iam.html" class="nav-link">IAM</a>
+          <a href="#" class="nav-link">Billing</a>
+          <a href="#" class="nav-link">Tracker</a>
+          <a href="archive.html" class="nav-link">Archive</a>
         </nav>
       </div>
 
@@ -91,11 +126,11 @@
         </button>
 
         <div class="relative">
-          <button id="notif-btn" class="p-2 rounded-full hover:bg-white/10 relative">
+          <button data-dropdown-btn="notif" class="p-2 rounded-full hover:bg-white/10 relative">
             <svg class="w-5 h-5 text-[var(--bms-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
             <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full"></span>
           </button>
-          <div id="notif-menu" class="hidden absolute right-0 top-12 w-80 bg-[var(--bms-card)] border border-[var(--bms-border)] rounded-xl shadow-2xl z-50 overflow-hidden">
+          <div data-dropdown="notif" class="hidden absolute right-0 top-12 w-80 bg-[var(--bms-card)] border border-[var(--bms-border)] rounded-xl shadow-2xl z-50 overflow-hidden">
             <div class="px-4 py-3 border-b border-[var(--bms-border)] font-medium text-sm">Уведомления</div>
             <div class="p-8 text-center">
               <p class="text-sm text-[var(--bms-muted)]">В данный момент нет входящих уведомлений</p>
@@ -104,17 +139,17 @@
         </div>
 
         <div class="relative">
-          <button id="profile-btn" class="w-9 h-9 rounded-full bg-[var(--bms-card)] border border-[var(--bms-border)] flex items-center justify-center hover:border-white/40 transition">
+          <button data-dropdown-btn="profile" class="w-9 h-9 rounded-full bg-[var(--bms-card)] border border-[var(--bms-border)] flex items-center justify-center hover:border-white/40 transition">
             <svg class="w-5 h-5 text-[var(--bms-muted)]" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
           </button>
-          <div id="profile-menu" class="hidden absolute right-0 top-12 w-56 bg-[var(--bms-card)] border border-[var(--bms-border)] rounded-xl shadow-2xl py-2 z-50">
+          <div data-dropdown="profile" class="hidden absolute right-0 top-12 w-56 bg-[var(--bms-card)] border border-[var(--bms-border)] rounded-xl shadow-2xl py-2 z-50">
             <a href="my.html" class="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-white/5">Мой профиль</a>
             <a href="#" class="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-white/5">Команда</a>
             <div class="border-t border-[var(--bms-border)] my-1"></div>
             <a href="#" class="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-white/5">Настройки</a>
             <a href="#" class="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-white/5">Пригласить в BMS</a>
             <div class="border-t border-[var(--bms-border)] my-1"></div>
-            <a href="#" class="flex items-center gap-3 px-4 py-2.5 text-sm text-red-400 hover:bg-red-500/10">Выйти</a>
+            <a href="#" data-logout class="flex items-center gap-3 px-4 py-2.5 text-sm text-red-400 hover:bg-red-500/10">Выйти</a>
           </div>
         </div>
       </div>
@@ -125,20 +160,40 @@
   <main class="flex-1 max-w-7xl mx-auto px-4 py-8 w-full">
     
     <!-- Greeting -->
-    <div class="mb-8">
+    <div class="mb-6">
       <p class="text-sm text-[var(--bms-muted)]">Четверг, 20 августа</p>
       <h1 class="text-2xl font-semibold mt-1">Добрый день, Вильям 👋</h1>
+    </div>
+
+    <!-- Search -->
+    <div class="mb-8 max-w-xl">
+      <div class="relative">
+        <svg class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--bms-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+        <input id="module-search" type="text" placeholder="Поиск по разделам и тегам… (hiring, docs, chat…)"
+          class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[var(--bms-card)] border border-[var(--bms-border)] text-sm outline-none focus:border-indigo-500 transition">
+      </div>
+      <div id="search-tags" class="flex flex-wrap gap-2 mt-3">
+        <button type="button" data-tag="hiring" class="search-tag px-2.5 py-1 rounded-full text-xs border border-[var(--bms-border)] text-[var(--bms-muted)] hover:border-indigo-500/50 hover:text-indigo-400 transition">#hiring</button>
+        <button type="button" data-tag="iam" class="search-tag px-2.5 py-1 rounded-full text-xs border border-[var(--bms-border)] text-[var(--bms-muted)] hover:border-indigo-500/50 hover:text-indigo-400 transition">#iam</button>
+        <button type="button" data-tag="chat" class="search-tag px-2.5 py-1 rounded-full text-xs border border-[var(--bms-border)] text-[var(--bms-muted)] hover:border-indigo-500/50 hover:text-indigo-400 transition">#chat</button>
+        <button type="button" data-tag="finance" class="search-tag px-2.5 py-1 rounded-full text-xs border border-[var(--bms-border)] text-[var(--bms-muted)] hover:border-indigo-500/50 hover:text-indigo-400 transition">#finance</button>
+        <button type="button" data-tag="time" class="search-tag px-2.5 py-1 rounded-full text-xs border border-[var(--bms-border)] text-[var(--bms-muted)] hover:border-indigo-500/50 hover:text-indigo-400 transition">#time</button>
+        <button type="button" data-tag="docs" class="search-tag px-2.5 py-1 rounded-full text-xs border border-[var(--bms-border)] text-[var(--bms-muted)] hover:border-indigo-500/50 hover:text-indigo-400 transition">#docs</button>
+      </div>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
       
       <!-- ===== LEFT COLUMN ===== -->
       <section class="lg:col-span-8">
-        <h2 class="text-xs font-medium text-[var(--bms-muted)] uppercase tracking-wider mb-4">Исследуйте BMS</h2>
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-xs font-medium text-[var(--bms-muted)] uppercase tracking-wider">Исследуйте BMS</h2>
+          <span id="search-count" class="text-xs text-[var(--bms-muted)]"></span>
+        </div>
         
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div id="modules-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <!-- Hiring -->
-          <a href="exchange.html" class="module-card bg-[var(--bms-card)] rounded-2xl p-5 block">
+          <a href="exchange.html" class="module-card bg-[var(--bms-card)] rounded-2xl p-5 block" data-tags="hiring hr recruit partners team">
             <div class="flex items-start justify-between mb-3">
               <div class="w-10 h-10 rounded-xl bg-indigo-500/15 flex items-center justify-center">
                 <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
@@ -150,7 +205,7 @@
           </a>
 
           <!-- IAM -->
-          <a href="iam.html" class="module-card bg-[var(--bms-card)] rounded-2xl p-5 block">
+          <a href="iam.html" class="module-card bg-[var(--bms-card)] rounded-2xl p-5 block" data-tags="iam access roles security permissions">
             <div class="w-10 h-10 rounded-xl bg-cyan-500/15 flex items-center justify-center mb-3">
               <svg class="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
             </div>
@@ -159,7 +214,7 @@
           </a>
 
           <!-- Messenger -->
-          <a href="messenger.html" class="module-card bg-[var(--bms-card)] rounded-2xl p-5 block">
+          <a href="messenger.html" class="module-card bg-[var(--bms-card)] rounded-2xl p-5 block" data-tags="messenger chat message communication">
             <div class="flex items-start justify-between mb-3">
               <div class="w-10 h-10 rounded-xl bg-blue-500/15 flex items-center justify-center">
                 <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
@@ -171,7 +226,7 @@
           </a>
 
           <!-- Billing -->
-          <a href="#" class="module-card bg-[var(--bms-card)] rounded-2xl p-5 block">
+          <a href="#" class="module-card bg-[var(--bms-card)] rounded-2xl p-5 block" data-tags="billing finance payment invoice money">
             <div class="w-10 h-10 rounded-xl bg-emerald-500/15 flex items-center justify-center mb-3">
               <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
             </div>
@@ -180,7 +235,7 @@
           </a>
 
           <!-- Tracker -->
-          <a href="#" class="module-card bg-[var(--bms-card)] rounded-2xl p-5 block">
+          <a href="#" class="module-card bg-[var(--bms-card)] rounded-2xl p-5 block" data-tags="tracker time productivity hours">
             <div class="w-10 h-10 rounded-xl bg-lime-500/15 flex items-center justify-center mb-3">
               <svg class="w-5 h-5 text-lime-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
             </div>
@@ -189,7 +244,7 @@
           </a>
 
           <!-- Archive -->
-          <a href="archive.html" class="module-card bg-[var(--bms-card)] rounded-2xl p-5 block">
+          <a href="archive.html" class="module-card bg-[var(--bms-card)] rounded-2xl p-5 block" data-tags="archive docs documents files signature">
             <div class="w-10 h-10 rounded-xl bg-teal-500/15 flex items-center justify-center mb-3">
               <svg class="w-5 h-5 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/></svg>
             </div>
@@ -197,6 +252,7 @@
             <p class="text-sm text-[var(--bms-muted)] mt-1">Храните, утверждайте и управляйте документами</p>
           </a>
         </div>
+        <p id="search-empty" class="hidden text-center text-sm text-[var(--bms-muted)] py-10">Ничего не найдено</p>
 
         <!-- ===== НОВОСТИ (внутри левой колонки) ===== -->
         <div class="mt-10">
@@ -312,24 +368,49 @@
   </footer>
 
   <script src="js/theme.js"></script>
+  <script src="js/header.js"></script>
   <script>
-    const appsBtn = document.getElementById('apps-btn');
-    const appsMenu = document.getElementById('apps-menu');
-    const notifBtn = document.getElementById('notif-btn');
-    const notifMenu = document.getElementById('notif-menu');
-    const profileBtn = document.getElementById('profile-btn');
-    const profileMenu = document.getElementById('profile-menu');
+    (function () {
+      const input = document.getElementById('module-search');
+      const cards = document.querySelectorAll('#modules-grid .module-card');
+      const countEl = document.getElementById('search-count');
+      const emptyEl = document.getElementById('search-empty');
+      const tagBtns = document.querySelectorAll('.search-tag');
 
-    function closeAll() {
-      appsMenu?.classList.add('hidden');
-      notifMenu?.classList.add('hidden');
-      profileMenu?.classList.add('hidden');
-    }
+      function filter(query) {
+        const q = query.trim().toLowerCase().replace(/^#/, '');
+        let visible = 0;
+        cards.forEach(card => {
+          const title = (card.querySelector('h3')?.textContent || '').toLowerCase();
+          const desc = (card.querySelector('p')?.textContent || '').toLowerCase();
+          const tags = (card.dataset.tags || '').toLowerCase();
+          const match = !q || title.includes(q) || desc.includes(q) || tags.includes(q);
+          card.style.display = match ? '' : 'none';
+          if (match) visible++;
+        });
+        countEl.textContent = q ? `${visible} из ${cards.length}` : '';
+        emptyEl.classList.toggle('hidden', visible > 0);
+      }
 
-    appsBtn?.addEventListener('click', e => { e.stopPropagation(); const h = appsMenu.classList.contains('hidden'); closeAll(); if (h) appsMenu.classList.remove('hidden'); });
-    notifBtn?.addEventListener('click', e => { e.stopPropagation(); const h = notifMenu.classList.contains('hidden'); closeAll(); if (h) notifMenu.classList.remove('hidden'); });
-    profileBtn?.addEventListener('click', e => { e.stopPropagation(); const h = profileMenu.classList.contains('hidden'); closeAll(); if (h) profileMenu.classList.remove('hidden'); });
-    document.addEventListener('click', closeAll);
+      input?.addEventListener('input', () => filter(input.value));
+
+      tagBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const tag = btn.dataset.tag;
+          if (input.value.replace(/^#/, '') === tag) {
+            input.value = '';
+            tagBtns.forEach(b => b.classList.remove('border-indigo-500', 'text-indigo-400'));
+          } else {
+            input.value = tag;
+            tagBtns.forEach(b => {
+              b.classList.toggle('border-indigo-500', b === btn);
+              b.classList.toggle('text-indigo-400', b === btn);
+            });
+          }
+          filter(input.value);
+        });
+      });
+    })();
   </script>
 </body>
 </html>

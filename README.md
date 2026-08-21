@@ -40,4 +40,51 @@ docker build -t bms-frontend .
 docker run -p 8080:80 bms-frontend
 text**2. Всё остальное выглядит нормально** по размеру и по концам файлов.
 
+## Запуск Backend
+
+```bash
+cd backend
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+alembic upgrade head
+uvicorn app.main:app --reload
+```
+
+Для автоматических тестов:
+
+```bash
+pip install -r requirements-dev.txt
+pytest -q
+```
+
+После запуска:
+
+- Health check: http://127.0.0.1:8000/health
+- Swagger: http://127.0.0.1:8000/docs
+- Регистрация: `POST /api/v1/auth/register`
+- Login в Swagger использует OAuth2 form-поля `username` и `password`: `POST /api/v1/auth/login`
+- Обновление токена: `POST /api/v1/auth/refresh`
+
+Уведомления:
+
+- Список: `GET /api/v1/notifications/?skip=0&limit=20&unread_only=false`
+- Непрочитанные: `GET /api/v1/notifications/unread-count`
+- Прочитать одно: `PUT /api/v1/notifications/{id}/read`
+- Прочитать все: `PUT /api/v1/notifications/read-all`
+- Удалить: `DELETE /api/v1/notifications/{id}`
+- Создать системное уведомление: `POST /api/v1/notifications/`
+- WebSocket: `ws://127.0.0.1:8000/ws/notifications/{user_id}?token=<access_token>`
+
+Пример тела системного уведомления:
+
+```json
+{
+	"user_id": "uuid-пользователя",
+	"title": "Документ обработан",
+	"message": "Ваш документ готов к просмотру.",
+	"type": "success"
+}
+```
+
 ---

@@ -1,23 +1,6 @@
-import uuid
-from datetime import datetime
+from pydantic import BaseModel
 
-from pydantic import BaseModel, ConfigDict, EmailStr, Field
-
-
-class UserCreate(BaseModel):
-    username: str = Field(min_length=3, max_length=50, pattern=r"^[a-zA-Z0-9_.-]+$")
-    email: EmailStr
-    password: str = Field(min_length=8, max_length=128)
-
-
-class UserRead(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
-    id: uuid.UUID
-    username: str
-    email: EmailStr
-    is_active: bool
-    created_at: datetime
+from app.schemas.user import UserCreate, UserRead, UserResponse, UserUpdate
 
 
 class Token(BaseModel):
@@ -37,6 +20,13 @@ from app.schemas.notification import (  # noqa: E402
     NotificationTypeValue,
     NotificationUpdate,
 )
+from app.schemas.document import (
+    DocumentDirectionValue,
+    DocumentResponse,
+    DocumentStatusUpdate,
+    DocumentStatusValue,
+    DocumentUploadResult,
+)
 
 __all__ = [
     "NotificationCreate",
@@ -44,8 +34,15 @@ __all__ = [
     "NotificationResponse",
     "NotificationTypeValue",
     "NotificationUpdate",
+    "DocumentDirectionValue",
+    "DocumentResponse",
+    "DocumentStatusUpdate",
+    "DocumentStatusValue",
+    "DocumentUploadResult",
     "RefreshRequest",
     "Token",
     "UserCreate",
     "UserRead",
+    "UserResponse",
+    "UserUpdate",
 ]
